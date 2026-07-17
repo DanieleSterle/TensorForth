@@ -1,11 +1,10 @@
 // Daniele Sterle SM3201594
 
-#ifndef var
-#define DEF_STACK_SIZE 8
-#define DEF_VALUES_SIZE 64
-#include <stdio.h>
-#endif
+#ifndef TENSORFORTH_STACK_H
+#define TENSORFORTH_STACK_H
 
+#define DEF_STACK_SIZE 4
+#define DEF_VALUES_SIZE 64
 
 typedef struct {
     // Row - Major
@@ -14,24 +13,15 @@ typedef struct {
     int columns;
 } tensor;
 
-
-tensor* create_stack();
-
-
-int push(tensor* stack, tensor element, int curr_stack_size, int idx_head);
-// Controlla se struct/stringa:
-// - struct: push normale
-// - stringa (operazione): pop operandi + push output operazione 
-// Argomenti: stack, struct
-// Return codice errore?
-
-
-int pop(tensor* stack, int idx_head, tensor* out_element);
+int create_stack(tensor** stack);
+int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head);
+int pop(tensor* stack, tensor* t, int idx_head);
+int create_tensor(tensor* t, float* values, int rows, int columns);
 void free_stack(tensor* stack, int idx_head);
 
-tensor create_tensor(float* values, int rows, int columns);
-
 // duplicate
-// swap 
+// swap
 // over
 // drop
+
+#endif
