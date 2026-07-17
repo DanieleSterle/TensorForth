@@ -4,7 +4,8 @@
 // Implements stack push/pop logic and stack operators like d, s, o, and D.
 
 #include <stdlib.h>
-#include "../include/stack.h"
+#include "stack.h"
+#include "utils.h"
 
 int create_stack(tensor** stack) {
     int curr_stack_size = DEF_STACK_SIZE;
@@ -19,7 +20,7 @@ int create_stack(tensor** stack) {
     
     // Check if allocation failed
     if (*stack == NULL) {
-        return -1;
+        return ERR_OUT_OF_MEMORY;
     }
 
     // Return the initial capacity
@@ -35,7 +36,7 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 
         tensor* temp = realloc(*stack, sizeof(tensor) * new_size);
         if (temp == NULL) {
-            return -1; // Allocation failed
+            return ERR_OUT_OF_MEMORY; // Allocation failed
         }
 
         *stack = temp;              // Update the caller's pointer
@@ -53,7 +54,7 @@ int pop(tensor* stack, tensor* t, int idx_head) {
     // Optional but recommended: Check for stack underflow
     if (idx_head <= 0) {
         //printf("ERRORE: Lo stack è vuoto, impossibile fare pop.\n");
-        return -1;
+        return ERR_STACK_UNDERFLOW;
     }
 
     // 1. Decrement the index to point to the actual top t
@@ -69,18 +70,18 @@ int pop(tensor* stack, tensor* t, int idx_head) {
 int create_tensor(tensor* t, float* values, int rows, int columns) {
     // Error handling: Check for NULL pointers or invalid dimensions
     if (t == NULL || values == NULL) {
-        return -1; 
+        return ERR_NULL_PTR; 
     }
     
     if (rows <= 0 || columns <= 0) {
-        return -1; 
+        return ERR_SHAPE_MISMATCH; 
     }
 
     t->values = values;
     t->rows = rows;
     t->columns = columns;
 
-    return 0;
+    return ERR_SUCCESS;
 }
 
 void free_stack(tensor* stack, int idx_head){
