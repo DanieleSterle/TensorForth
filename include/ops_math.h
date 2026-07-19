@@ -13,5 +13,9 @@ int tensor_lt(tensor* t1, tensor* t2, tensor* result);
 int tensor_gt(tensor* t1, tensor* t2, tensor* result);
 int tensor_eq(tensor* t1, tensor* t2, tensor* result);
 
+int tensor_and(tensor* t1, tensor* t2, tensor* result);
+int tensor_or(tensor* t1, tensor* t2, tensor* result);
+int tensor_not(tensor* t1, tensor* result);
+
 
 #endif

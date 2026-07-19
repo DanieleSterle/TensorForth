@@ -14,7 +14,6 @@
 #define BUFFER_SIZE 64
 #endif
 
-// COME GESTIRE CODICI ERRORI INIZIALI?
 int main(int argc, char *argv[]) {
 
     if (argc < 2){
@@ -387,13 +386,79 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni logiche */
         case '&':
-            /* code */
+
+            status = handle_and_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
         case '|':
-            /* code */
+
+            status = handle_or_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
         case '!':
-            /* code */
+
+            status = handle_not_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
 
         /* Operazioni di selezione */

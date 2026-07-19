@@ -14,22 +14,24 @@ typedef enum {
     ERR_OUT_OF_MEMORY = -2,
     ERR_STACK_UNDERFLOW = -3,
     ERR_STACK_OVERFLOW = -4,
-    // Math Operations
+    // Math & Logic Operations
     ERR_SHAPE_MISMATCH = -5,
+    ERR_NOT_BOOLEAN = -6,
     // I/O and Files
-    ERR_MISSING_ARGUMENT = -6,
-    ERR_FILE_OPEN = -7,
-    ERR_UNEXPECTED_EOF = -8,
+    ERR_MISSING_ARGUMENT = -7,
+    ERR_FILE_OPEN = -8,
+    ERR_UNEXPECTED_EOF = -9,
     // Syntax and Parsing
-    ERR_SYNTAX = -9,
-    ERR_INVALID_CHAR = -10,
-    ERR_BUFFER_OVERFLOW = -11,
-    ERR_EMPTY_TENSOR = -12,
-    ERR_INVALID_NUMBER = -13
+    ERR_SYNTAX = -10,
+    ERR_INVALID_CHAR = -11,
+    ERR_BUFFER_OVERFLOW = -12,
+    ERR_EMPTY_TENSOR = -13,
+    ERR_INVALID_NUMBER = -14
 } error_code;
 
 void free_all(FILE* fd, tensor* stack, int s_stack, float* values);
 int shape_cmp(tensor* t1, tensor* t2);
+int is_boolean(tensor* t1);
 void print_error(int error_code);
 
 #endif

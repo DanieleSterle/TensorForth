@@ -30,6 +30,28 @@ int shape_cmp(tensor* t1, tensor* t2) {
 
 }
 
+int is_boolean(tensor* t) {
+
+    if (t  ==  NULL) return ERR_NULL_PTR; 
+
+    /*
+    OPTIMIZE WITH OPENMP
+    for (int i = 0; i < res->rows; i++){
+        for (int j = 0; j < res->columns; j++){
+            result->values[i] = (t1->values[i] == t2->values[i]);
+        }
+    }
+    */
+
+    int s_values = t->rows * t->columns;
+    for (int i = 0; i < s_values; i++) {
+       if ((t->values[i]  !=  0.0)  &&  (t->values[i]  !=  1.0)) return ERR_NOT_BOOLEAN;
+    }
+
+    return ERR_SUCCESS;
+
+}
+
 // aggiungere quale ASCII non valido?
 void print_error(int error_code) {
     switch (error_code) {
@@ -40,6 +62,9 @@ void print_error(int error_code) {
             break;
         case ERR_SHAPE_MISMATCH:
             fprintf(stderr, "ERRORE: Le dimensioni dei tensori non corrispondono per questa operazione.\n");
+            break;
+        case ERR_NOT_BOOLEAN:
+            fprintf(stderr, "ERRORE: I tensori per questa operazione logica devono contenere solo 0.0 o 1.0.\n");
             break;
         case ERR_OUT_OF_MEMORY:
             fprintf(stderr, "ERRORE: Memoria esaurita (allocazione fallita).\n");
