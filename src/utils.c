@@ -30,6 +30,7 @@ int shape_cmp(tensor* t1, tensor* t2) {
 
 }
 
+// aggiungere quale ASCII non valido?
 void print_error(int error_code) {
     switch (error_code) {
         case ERR_SUCCESS:
@@ -48,6 +49,30 @@ void print_error(int error_code) {
             break;
         case ERR_STACK_OVERFLOW:
             fprintf(stderr, "ERRORE: Capacità dello stack superata.\n");
+            break;
+        case ERR_MISSING_ARGUMENT:
+            fprintf(stderr, "ERRORE: Non è stato passato nessun file in input.\n");
+            break;
+        case ERR_FILE_OPEN:
+            fprintf(stderr, "ERRORE: Impossibile aprire il file specificato.\n");
+            break;
+        case ERR_SYNTAX:
+            fprintf(stderr, "ERRORE DI SINTASSI: Formato non valido, spazio mancante o numero fuori posto.\n");
+            break;
+        case ERR_BUFFER_OVERFLOW:
+            fprintf(stderr, "ERRORE: Buffer overflow. Il numero supera i caratteri consentiti.\n");
+            break;
+        case ERR_EMPTY_TENSOR:
+            fprintf(stderr, "ERRORE DI SINTASSI: Tensore vuoto '[]' non consentito.\n");
+            break;
+        case ERR_INVALID_NUMBER:
+            fprintf(stderr, "ERRORE DI SINTASSI: Formato numerico non valido (es. segno '-' errato o multipli punti).\n");
+            break;
+        case ERR_INVALID_CHAR:
+            fprintf(stderr, "ERRORE: Trovato carattere ASCII non valido.\n");
+            break;
+        case ERR_UNEXPECTED_EOF:
+            fprintf(stderr, "ERRORE: Fine file inaspettata prima della chiusura ']'.\n");
             break;
         default:
             fprintf(stderr, "ERRORE: Si è verificato un errore sconosciuto (Codice: %d).\n", error_code);

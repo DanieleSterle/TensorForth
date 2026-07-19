@@ -18,8 +18,8 @@
 int main(int argc, char *argv[]) {
 
     if (argc < 2){
-        printf("Non è stato passato nessun file\n");
-        exit(1);
+        print_error(ERR_MISSING_ARGUMENT);
+        return ERR_MISSING_ARGUMENT;
     }
 
     tensor* stack = NULL;
@@ -27,15 +27,18 @@ int main(int argc, char *argv[]) {
     int s_head = 0;
 
     if (s_size  ==  -1) {
-        printf("ERRORE: Impossibile creare lo stack");
-        return 1;
+        print_error(ERR_OUT_OF_MEMORY);
+        return ERR_OUT_OF_MEMORY;
     }
 
     FILE* file = fopen(argv[1], "r"); 
     int curr;
-    if (file == NULL) {
-        printf("ERRORE: Impossibile aprire il file '%s'\n", argv[1]);
-        return 1; // or exit(1);
+    if (file  ==  NULL) {
+        fprintf(stderr, "File: '%s'\n", argv[1]); 
+        print_error(ERR_FILE_OPEN);
+        // Clean up the stack since it was allocated!
+        free_all(NULL, stack, s_head, NULL);
+        return 1;
     }
 
     int last_char = ' ';
@@ -44,10 +47,9 @@ int main(int argc, char *argv[]) {
         
         // Gestione numero fuori posto
         if (isdigit(curr)) {
-            printf("ERRORE: Numero trovato al di fuori di un tensore.\n");
+            print_error(ERR_SYNTAX);
             free_all(file, stack, s_head, NULL);
-
-            return 1;
+            return ERR_SYNTAX;
         }
         
         if (isspace(curr)) {
@@ -58,9 +60,9 @@ int main(int argc, char *argv[]) {
         if (curr == '['){
 
             if (last_char  ==  ']') {
-                printf("ERRORE: Formato non valido. I tensori devono essere separati da almeno uno spazio.\n");
+                print_error(ERR_SYNTAX);
                 free_all(file, stack, s_head, NULL);
-                return 1;
+                return ERR_SYNTAX;
             }
             
             float* values = (float*) malloc(sizeof(float) * DEF_VALUES_SIZE);
@@ -75,15 +77,15 @@ int main(int argc, char *argv[]) {
             while((curr = getc(file))  !=  ']'){
                 
                 if (curr == EOF) {
-                    printf("ERRORE: Fine file inaspettata prima di chiudere la parentesi ']'.\n");
+                    print_error(ERR_UNEXPECTED_EOF);
                     free_all(file, stack, s_head, values);
-                    return 1;
+                    return ERR_UNEXPECTED_EOF;
                 }
 
                 if (last_char == '[' && curr != ' ') {
-                    printf("ERRORE: Formato non valido. Manca lo spazio dopo '['.\n");
+                    print_error(ERR_SYNTAX);
                     free_all(file, stack, s_head, values);
-                    return 1;
+                    return ERR_SYNTAX;
                 }
 
                 if (curr  ==  ' '){
@@ -98,9 +100,9 @@ int main(int argc, char *argv[]) {
 
                         // Check if there are multiple . in a row (eg 10..5)
                         if (*endptr != '\0') {
-                            fprintf(stderr, "Error: String contains invalid trailing characters: '%s'\n", endptr);
+                            print_error(ERR_INVALID_NUMBER);
                             free_all(file, stack, s_head, values);
-                            return 1;
+                            return ERR_INVALID_NUMBER;
                         } 
 
                         // --- INSERIRE IN VALUES + RESIZE ---
@@ -111,9 +113,9 @@ int main(int argc, char *argv[]) {
     
                             // 3. Check if realloc failed
                             if (temp  ==  NULL) {
-                                printf("ERRORE: Memoria esaurita durante il ridimensionamento.\n");
+                                print_error(ERR_OUT_OF_MEMORY);
                                 free_all(file, stack, s_head, values);
-                                return 1;     // Exit the program
+                                return ERR_OUT_OF_MEMORY;
                             }
                             
                             // 4. It succeeded! Update the main pointer
@@ -131,49 +133,48 @@ int main(int argc, char *argv[]) {
                 }
 
                 if ((curr  ==  '\n')  ||  (curr  ==  '\t')  ||  (curr  ==  '\r')) {
-                    printf("ERRORE: Spazi bianchi non consentiti (newline/tab) dentro il tensore.\n");
+                    print_error(ERR_SYNTAX);
                     free_all(file, stack, s_head, values);
-                    return 1;
+                    return ERR_SYNTAX;
                 }
 
                 if (isdigit(curr)  ||  curr  ==  '.'  ||  curr  ==  '-'){
                     
                     if (curr == '-' && last_char != ' ') {
-                        printf("ERRORE: Segno '-' in posizione non valida all'interno del numero.\n");
+                        print_error(ERR_SYNTAX);
                         free_all(file, stack, s_head, values);
-                        return 1;
+                        return ERR_SYNTAX;
                     }
 
                     if (b_idx < BUFFER_SIZE - 1){
                         buffer[b_idx++] = curr;
                     }else{
-                        printf("ERRORE: Buffer overflow. Numero oltre %d caratteri non consentito.\n", BUFFER_SIZE);
+                        print_error(ERR_SYNTAX);
                         free_all(file, stack, s_head, values);
-                        return 1;
+                        return ERR_SYNTAX;
                     }
                     last_char = curr;
                     continue;
                 }
                 
-
-                printf("ERRORE: Carattere non valido '%c' (Codice ASCII: %d).\n", curr, curr);
+                print_error(ERR_INVALID_CHAR);
                 free_all(file, stack, s_head, values);
-                return 1;
+                return ERR_INVALID_CHAR;
 
             }
 
             if (last_char != ' ' && last_char != '[') {
-                printf("ERRORE: Formato non valido. Manca lo spazio prima di ']'.\n");
+                print_error(ERR_SYNTAX);
                 free_all(file, stack, s_head, values);
-                return 1;
+                return ERR_SYNTAX;
             }
 
             last_char = ']';
 
             if (v_idx == 0) {
-                printf("ERRORE: Tensore vuoto '[]' non consentito.\n");
+                print_error(ERR_EMPTY_TENSOR);
                 free_all(file, stack, s_head, values);
-                return 1;
+                return ERR_EMPTY_TENSOR;
             }
 
             // SHRINKING MALLOC LOGIC
@@ -183,9 +184,9 @@ int main(int argc, char *argv[]) {
     
             // 3. Check if realloc failed
             if (temp  ==  NULL) {
-                printf("ERRORE: Memoria esaurita durante il ridimensionamento.\n");
+                print_error(ERR_OUT_OF_MEMORY);
                 free_all(file, stack, s_head, values);
-                return 1;     // Exit the program
+                return ERR_OUT_OF_MEMORY;
             }
             // 4. It succeeded! Update the main pointer
             values = temp;
@@ -194,15 +195,17 @@ int main(int argc, char *argv[]) {
 
             tensor new_tensor;
             if (create_tensor(&new_tensor, values, 1, v_size)  ==  -1) {
-                printf("ERRORE: Impossibile creare tensore.\n");
+                print_error(ERR_OUT_OF_MEMORY); // Or custom ERR_TENSOR_CREATION
+                free_all(file, stack, s_head, values);
+                return ERR_OUT_OF_MEMORY;
             }
 
             s_head = push(&stack, new_tensor, &s_size, s_head);
             
             if (s_head  ==  -1) {
-                printf("ERRORE: Memoria esaurita durante il ridimensionamento.\n");
+                print_error(ERR_STACK_OVERFLOW);
                 free_all(file, stack, s_head, values);
-                return 1;
+                return ERR_STACK_OVERFLOW;
             }
 
             //DEBUG
@@ -305,13 +308,81 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di comparazione */
         case '<':
-            /* code */
+            
+            status = handle_lt_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
         case '>':
-            /* code */
+            
+
+            status = handle_gt_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
         case '=':
-            /* code */
+            
+            status = handle_eq_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
+
             break;
 
         /* Operazioni logiche */
