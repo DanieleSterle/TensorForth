@@ -13,3 +13,5 @@ int handle_eq_op(tensor** stack, int* s_size, int* s_head);
 int handle_and_op(tensor** stack, int* s_size, int* s_head);
 int handle_or_op(tensor** stack, int* s_size, int* s_head);
 int handle_not_op(tensor** stack, int* s_size, int* s_head);
+
+int handle_select_op(tensor** stack, int* s_size, int* s_head);

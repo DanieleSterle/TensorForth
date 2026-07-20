@@ -17,5 +17,6 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result);
 int tensor_or(tensor* t1, tensor* t2, tensor* result);
 int tensor_not(tensor* t1, tensor* result);
 
+int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result);
 
 #endif

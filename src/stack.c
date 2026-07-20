@@ -31,7 +31,6 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 
     // Se array occupato al 100% raddoppiare size
     if (idx_head == *curr_stack_size) {
-        // Handle the case where initial size is 0
         int new_size = *curr_stack_size * 2;
 
         tensor* temp = realloc(*stack, sizeof(tensor) * new_size);
@@ -53,7 +52,6 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 int pop(tensor* stack, tensor* t, int idx_head) {
     // Optional but recommended: Check for stack underflow
     if (idx_head <= 0) {
-        //printf("ERRORE: Lo stack è vuoto, impossibile fare pop.\n");
         return ERR_STACK_UNDERFLOW;
     }
 
