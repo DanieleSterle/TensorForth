@@ -15,3 +15,7 @@ int handle_or_op(tensor** stack, int* s_size, int* s_head);
 int handle_not_op(tensor** stack, int* s_size, int* s_head);
 
 int handle_select_op(tensor** stack, int* s_size, int* s_head);
+
+int handle_matmul_op(tensor** stack, int* s_size, int* s_head);
+int handle_dot_op(tensor** stack, int* s_size, int* s_head);
+int handle_conv2d_op(tensor** stack, int* s_size, int* s_head);

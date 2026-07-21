@@ -2,6 +2,7 @@
 
 #include "ops_handler.h"
 #include "ops_math.h"
+#include "ops_tensor.h"
 #include "utils.h"
 #include <stdlib.h>
 
@@ -261,6 +262,84 @@ int handle_select_op(tensor** stack, int* s_size, int* s_head) {
     free(mask.values);
     free(t1.values);
     free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+}
+
+int handle_matmul_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t1, t2, result;
+
+    *s_head = pop(*stack, &t1, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t2, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(t1.values);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int matmul_result = tensor_matmul(&t1, &t2, &result);
+    if (matmul_result != ERR_SUCCESS) {
+        free(t1.values);
+        free(t2.values);
+        return matmul_result;
+    }
+
+    free(t1.values);
+    free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+}
+
+int handle_dot_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t1, t2, result;
+
+    *s_head = pop(*stack, &t1, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t2, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(t1.values);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int dot_result = tensor_dot(&t1, &t2, &result);
+    if (dot_result != ERR_SUCCESS) {
+        free(t1.values);
+        free(t2.values);
+        return dot_result;
+    }
+
+    free(t1.values);
+    free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+}
+
+int handle_conv2d_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t, k, result;
+
+    *s_head = pop(*stack, &k, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(k.values);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int matmul_result = tensor_conv2d(&t, &k, &result);
+    if (matmul_result != ERR_SUCCESS) {
+        free(t.values);
+        free(k.values);
+        return matmul_result;
+    }
+
+    free(t.values);
+    free(k.values);
 
     *s_head = push(stack, result, s_size, *s_head);
     return ERR_SUCCESS; // 0 means the whole stack operation succeeded

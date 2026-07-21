@@ -30,6 +30,36 @@ int shape_cmp(tensor* t1, tensor* t2) {
 
 }
 
+int shape_cmp_matmul(tensor* t1, tensor* t2) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+
+    if (t1->columns  ==  t2->rows){
+        return ERR_SUCCESS;
+    }
+
+    return ERR_MATMUL_DIM_MISMATCH;
+
+}
+
+int shape_cmp_dot(tensor* t1, tensor* t2) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+
+    int len_t1 = t1->rows * t1->columns;
+    int len_t2 = t2->rows * t2->columns;
+
+    if (len_t1  ==  len_t2) {
+        return ERR_SUCCESS;
+    }
+
+    return ERR_DOT_DIM_MISMATCH; 
+}
+
 int is_boolean(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR; 
@@ -52,19 +82,42 @@ int is_boolean(tensor* t) {
 
 }
 
-// aggiungere quale ASCII non valido?
+int is_matrix(tensor* t) {
+
+    if (t  ==  NULL) return ERR_NULL_PTR;
+
+    if ((t->rows  !=  1)  &&  (t->columns  !=  1)){
+        return ERR_SUCCESS;
+    }
+
+    return ERR_NOT_MATRIX;
+
+}
+
+/*
+int is_vector(tensor* t) {
+
+    if (t  ==  NULL) return ERR_NULL_PTR;
+
+    if ((t->rows  ==  1)  &&  (t->columns  !=  1)){
+        return ERR_SUCCESS;
+    }
+
+    if ((t->rows  !=  1)  &&  (t->columns  ==  1)){
+        return ERR_SUCCESS;
+    }
+
+    return ERR_NOT_VECTOR;
+
+}
+*/
+
 void print_error(int error_code) {
     switch (error_code) {
         case ERR_SUCCESS:
             break;
         case ERR_NULL_PTR:
             fprintf(stderr, "ERRORE: Rilevato puntatore nullo.\n");
-            break;
-        case ERR_SHAPE_MISMATCH:
-            fprintf(stderr, "ERRORE: Le dimensioni dei tensori non corrispondono per questa operazione.\n");
-            break;
-        case ERR_NOT_BOOLEAN:
-            fprintf(stderr, "ERRORE: I tensori per questa operazione logica devono contenere solo 0.0 o 1.0.\n");
             break;
         case ERR_OUT_OF_MEMORY:
             fprintf(stderr, "ERRORE: Memoria esaurita (allocazione fallita).\n");
@@ -75,14 +128,35 @@ void print_error(int error_code) {
         case ERR_STACK_OVERFLOW:
             fprintf(stderr, "ERRORE: Capacità dello stack superata.\n");
             break;
+        case ERR_SHAPE_MISMATCH:
+            fprintf(stderr, "ERRORE: Le dimensioni dei tensori non corrispondono per questa operazione.\n");
+            break;
+        case ERR_NOT_BOOLEAN:
+            fprintf(stderr, "ERRORE LOGICO: I tensori per questa operazione accettano esclusivamente valori booleani (0.0 o 1.0).\n");
+            break;
+        case ERR_NOT_MATRIX:
+            fprintf(stderr, "ERRORE DI DIMENSIONE: L'operazione richiede una matrice (tensore 2D), ma è stato fornito un tensore 1D.\n");
+            break;
+        case ERR_DOT_DIM_MISMATCH:
+            fprintf(stderr, "ERRORE DI DIMENSIONE: I vettori per il prodotto interno (dot product) devono avere lo stesso numero totale di elementi.\n");
+            break;
+        case ERR_MATMUL_DIM_MISMATCH:
+            fprintf(stderr, "ERRORE DI DIMENSIONE: Tensori non compatibili per il prodotto. Le colonne del primo tensore devono coincidere con le righe del secondo.\n");
+            break;
         case ERR_MISSING_ARGUMENT:
             fprintf(stderr, "ERRORE: Non è stato passato nessun file in input.\n");
             break;
         case ERR_FILE_OPEN:
             fprintf(stderr, "ERRORE: Impossibile aprire il file specificato.\n");
             break;
+        case ERR_UNEXPECTED_EOF:
+            fprintf(stderr, "ERRORE: Fine file inaspettata prima della chiusura ']'.\n");
+            break;
         case ERR_SYNTAX:
             fprintf(stderr, "ERRORE DI SINTASSI: Formato non valido, spazio mancante o numero fuori posto.\n");
+            break;
+        case ERR_INVALID_CHAR:
+            fprintf(stderr, "ERRORE: Trovato carattere ASCII non valido.\n");
             break;
         case ERR_BUFFER_OVERFLOW:
             fprintf(stderr, "ERRORE: Buffer overflow. Il numero supera i caratteri consentiti.\n");
@@ -92,12 +166,6 @@ void print_error(int error_code) {
             break;
         case ERR_INVALID_NUMBER:
             fprintf(stderr, "ERRORE DI SINTASSI: Formato numerico non valido (es. segno '-' errato o multipli punti).\n");
-            break;
-        case ERR_INVALID_CHAR:
-            fprintf(stderr, "ERRORE: Trovato carattere ASCII non valido.\n");
-            break;
-        case ERR_UNEXPECTED_EOF:
-            fprintf(stderr, "ERRORE: Fine file inaspettata prima della chiusura ']'.\n");
             break;
         default:
             fprintf(stderr, "ERRORE: Si è verificato un errore sconosciuto (Codice: %d).\n", error_code);
