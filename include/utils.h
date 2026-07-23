@@ -40,6 +40,9 @@ int shape_cmp_dot(tensor* t1, tensor* t2);
 int is_boolean(tensor* t);
 int is_matrix(tensor* t);
 int is_vector(tensor* t);
+
+void print_tensor(tensor* t);
 void print_error(int error_code);
+
 
 #endif

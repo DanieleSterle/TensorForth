@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
             }
 
             //DEBUG
-            printf("\nho fatto il push di:");
+            /*printf("\nho fatto il push di:");
             printf("\n[");
 
             // Loop up to v_idx (the number of floats in this tensor), not s_head
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
             }
 
             printf("]\n");
-
+            */
         }
 
         if (curr == '"'){
@@ -238,21 +238,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la + e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
              
             break;
@@ -263,20 +248,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la - e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
             }
 
             break;
@@ -287,21 +258,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -314,47 +270,16 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
         case '>':
             
-
             status = handle_gt_op(&stack, &s_size, &s_head);
 
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -365,23 +290,7 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
-
 
             break;
 
@@ -393,21 +302,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -418,21 +312,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -443,21 +322,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -470,21 +334,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -497,21 +346,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -522,21 +356,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -547,21 +366,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -574,25 +378,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("rows: %d \n", stack[s_head - 1].rows);
-                printf("columns: %d \n", stack[s_head - 1].columns);
-
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -603,25 +388,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("rows: %d \n", stack[s_head - 1].rows);
-                printf("columns: %d \n", stack[s_head - 1].columns);
-
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -632,25 +398,6 @@ int main(int argc, char *argv[]) {
             if (status != ERR_SUCCESS) {
                 print_error(status); 
                 return status;
-            }else {
-
-
-                // --- DEBUG ---
-                printf("ho fatto la * e ho fatto push\n");
-                printf("Stack head: %d\n", s_head);
-
-                printf("rows: %d \n", stack[s_head - 1].rows);
-                printf("columns: %d \n", stack[s_head - 1].columns);
-
-
-                printf("\n[");
-
-                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
-                    printf(" %.2f ", stack[s_head - 1].values[i]);
-                }
-
-                printf("]\n");
-
             }
 
             break;
@@ -683,7 +430,14 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di utilità */
         case 'p':
-            /* code */
+            
+            status = handle_print_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }
+
             break;
 
         /* Operazioni di manipolazione dello stack */

@@ -23,3 +23,14 @@ int handle_conv2d_op(tensor** stack, int* s_size, int* s_head);
 int handle_reshape_op(tensor** stack, int* s_size, int* s_head);
 int handle_ravel_op(tensor** stack, int* s_size, int* s_head);
 int handle_get_shape_op(tensor** stack, int* s_size, int* s_head);
+
+/*
+
+random number
+element-wise
+reduction
+filling
+
+*/
+
+int handle_print_op(tensor** stack, int* s_size, int* s_head);

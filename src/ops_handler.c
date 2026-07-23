@@ -400,7 +400,28 @@ int handle_get_shape_op(tensor** stack, int* s_size, int* s_head) {
     }
 
     free(t.values);
-    
+
     *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+}
+
+/*
+
+random number
+element-wise
+reduction
+filling
+
+*/
+
+int handle_print_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    print_tensor(&t);
+    free(t.values);
+
     return ERR_SUCCESS; // 0 means the whole stack operation succeeded
 }

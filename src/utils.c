@@ -106,6 +106,30 @@ int is_vector(tensor* t) {
 
 }
 
+void print_tensor(tensor* t) {
+    
+    if (t == NULL) {
+        return;
+    }
+
+    // shape: rows columns
+    printf("Tensor(shape=[");
+    printf("%d %d", t->rows, t->columns);
+    
+    printf("], data=[");
+
+    // Print all data values separated by a space
+    int total_elements = t->rows * t->columns;
+    for (int i = 0; i < total_elements; i++) {
+        printf("%.2f", t->values[i]);
+        if (i < total_elements - 1) {
+            printf(" ");
+        }
+    }
+    
+    printf("])\n");
+}
+
 void print_error(int error_code) {
     switch (error_code) {
         case ERR_SUCCESS:
