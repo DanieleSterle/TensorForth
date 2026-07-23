@@ -94,23 +94,17 @@ int is_matrix(tensor* t) {
 
 }
 
-/*
 int is_vector(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR;
 
-    if ((t->rows  ==  1)  &&  (t->columns  !=  1)){
-        return ERR_SUCCESS;
-    }
-
-    if ((t->rows  !=  1)  &&  (t->columns  ==  1)){
+    if ((t->rows == 1) || (t->columns == 1)) {
         return ERR_SUCCESS;
     }
 
     return ERR_NOT_VECTOR;
 
 }
-*/
 
 void print_error(int error_code) {
     switch (error_code) {

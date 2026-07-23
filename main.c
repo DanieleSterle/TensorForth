@@ -568,13 +568,91 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni sulla forma dei tensori */
         case 'r':
-            /* code */
+
+            status = handle_reshape_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("rows: %d \n", stack[s_head - 1].rows);
+                printf("columns: %d \n", stack[s_head - 1].columns);
+
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
-        case '\\': /* Note: Escaped backslash for C char literal */
-            /* code */
+        case '_': /* Note: Escaped backslash for C char literal */
+            
+            status = handle_ravel_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("rows: %d \n", stack[s_head - 1].rows);
+                printf("columns: %d \n", stack[s_head - 1].columns);
+
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
         case '#':
-            /* code */
+        
+            status = handle_get_shape_op(&stack, &s_size, &s_head);
+
+            if (status != ERR_SUCCESS) {
+                print_error(status); 
+                return status;
+            }else {
+
+
+                // --- DEBUG ---
+                printf("ho fatto la * e ho fatto push\n");
+                printf("Stack head: %d\n", s_head);
+
+                printf("rows: %d \n", stack[s_head - 1].rows);
+                printf("columns: %d \n", stack[s_head - 1].columns);
+
+
+                printf("\n[");
+
+                for (int i = 0; i < stack[s_head - 1].columns * stack[s_head - 1].rows; i++){
+                    printf(" %.2f ", stack[s_head - 1].values[i]);
+                }
+
+                printf("]\n");
+
+            }
+
             break;
 
         /* Operazioni di generazione di numeri casuali */

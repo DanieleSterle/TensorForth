@@ -18,6 +18,7 @@ typedef enum {
     ERR_SHAPE_MISMATCH = -5,
     ERR_NOT_BOOLEAN = -6,
     ERR_NOT_MATRIX = -7,
+    ERR_NOT_VECTOR = -18,
     ERR_DOT_DIM_MISMATCH = -8,
     ERR_MATMUL_DIM_MISMATCH = -9,
     // I/O and Files
@@ -38,7 +39,7 @@ int shape_cmp_matmul(tensor* t1, tensor* t2);
 int shape_cmp_dot(tensor* t1, tensor* t2);
 int is_boolean(tensor* t);
 int is_matrix(tensor* t);
-//int is_vetcor(tensor* t);
+int is_vector(tensor* t);
 void print_error(int error_code);
 
 #endif
