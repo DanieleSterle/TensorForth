@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 #include "stack.h"
 #include "utils.h"
 #include "ops_handler.h"
@@ -16,6 +17,8 @@
 #endif
 
 int main(int argc, char *argv[]) {
+
+    srand(time(NULL));
 
     if (argc < 2){
         print_error(ERR_MISSING_ARGUMENT);
@@ -169,8 +172,6 @@ int main(int argc, char *argv[]) {
                 return ERR_SYNTAX;
             }
 
-            last_char = ']';
-
             if (v_idx == 0) {
                 print_error(ERR_EMPTY_TENSOR);
                 free_all(file, stack, s_head, values);
@@ -219,192 +220,84 @@ int main(int argc, char *argv[]) {
 
             printf("]\n");
             */
+
+            last_char = ']';
+            continue;
         }
 
         if (curr == '"'){
             //TODO: gestione file 
         }
 
-        int status;
+        // int status; - quando tutte operazioni implementate
+        // DEBUG
+        int status = ERR_SUCCESS;
 
-        // SOLO CHIAMARE FUNZIONI + print errori, NO BUSINESS LOGIC
         switch (curr) {
         
         /* Operazioni aritmetiche */
         case '+':
-
             status = handle_add_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-             
             break;
         case '-':
-            
             status = handle_subtract_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '*':
-            
             status = handle_multiply_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni di comparazione */
         case '<':
-            
             status = handle_lt_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '>':
-            
             status = handle_gt_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '=':
-            
             status = handle_eq_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni logiche */
         case '&':
-
             status = handle_and_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '|':
-
             status = handle_or_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '!':
-
             status = handle_not_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni di selezione */
         case '$':
-            
             status = handle_select_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni specifiche per tensori */
         case '@':
-            
             status = handle_matmul_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '.':
-            
             status = handle_dot_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case 'c':
-            
             status = handle_conv2d_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni sulla forma dei tensori */
         case 'r':
-
             status = handle_reshape_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '_': /* Note: Escaped backslash for C char literal */
-            
             status = handle_ravel_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
         case '#':
-        
             status = handle_get_shape_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
             break;
 
         /* Operazioni di generazione di numeri casuali */
         case '?':
-            /* code */
+            status = handle_random_op(&stack, &s_size, &s_head);
             break;
 
         /* Operazioni elemento per elemento */
@@ -430,14 +323,7 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di utilità */
         case 'p':
-            
-            status = handle_print_op(&stack, &s_size, &s_head);
-
-            if (status != ERR_SUCCESS) {
-                print_error(status); 
-                return status;
-            }
-
+            status = handle_print_op(&stack, &s_head);
             break;
 
         /* Operazioni di manipolazione dello stack */
@@ -469,8 +355,14 @@ int main(int argc, char *argv[]) {
             break;
         
         default:
+            status = ERR_SYNTAX;
             break;
 
+        }
+
+        if (status != ERR_SUCCESS) {
+            print_error(status);
+            return status;
         }
     }
 

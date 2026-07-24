@@ -106,7 +106,7 @@ int is_vector(tensor* t) {
 
 }
 
-void print_tensor(tensor* t) {
+void tensor_print(tensor* t) {
     
     if (t == NULL) {
         return;
@@ -128,6 +128,56 @@ void print_tensor(tensor* t) {
     }
     
     printf("])\n");
+}
+
+int tensor_generate_random(tensor* s, tensor* result) {
+    if ((s  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    }
+
+    int vector_result = is_vector(s);
+    if (vector_result  !=  ERR_SUCCESS) return vector_result;
+
+    int s_len = s->rows * s->columns;
+
+    if ((s_len < 1)  ||  (s_len > 2)) {
+        return ERR_SHAPE_MISMATCH; 
+    }
+
+    int rows;
+    int cols;
+
+    if (s_len == 2) {
+        // shape is 2D Matrix
+        rows = (int)s->values[0];
+        cols = (int)s->values[1];
+    } else {
+        // shape is 1D Vector 
+        rows = 1;
+        cols = (int)s->values[0];
+    }
+
+    if ((rows <= 0)  ||  (cols <= 0)) {
+        return ERR_SHAPE_MISMATCH;
+    }
+
+    result->columns = cols;
+    result->rows = rows;
+
+    int size = cols * rows;
+    result->values = (float*) malloc(sizeof(float) * size);
+
+    if (result->values  ==  NULL) {
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    // NON OTTIMIZZARE
+    for (int i = 0; i < size; i++){
+        result->values[i] = (float)rand() / (float)RAND_MAX;
+    }
+
+    return ERR_SUCCESS;
+
 }
 
 void print_error(int error_code) {

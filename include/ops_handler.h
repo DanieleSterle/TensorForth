@@ -24,6 +24,8 @@ int handle_reshape_op(tensor** stack, int* s_size, int* s_head);
 int handle_ravel_op(tensor** stack, int* s_size, int* s_head);
 int handle_get_shape_op(tensor** stack, int* s_size, int* s_head);
 
+int handle_random_op(tensor** stack, int* s_size, int* s_head);
+
 /*
 
 random number
@@ -33,4 +35,4 @@ filling
 
 */
 
-int handle_print_op(tensor** stack, int* s_size, int* s_head);
+int handle_print_op(tensor** stack, int* s_head);

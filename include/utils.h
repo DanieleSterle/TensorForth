@@ -41,7 +41,8 @@ int is_boolean(tensor* t);
 int is_matrix(tensor* t);
 int is_vector(tensor* t);
 
-void print_tensor(tensor* t);
+void tensor_print(tensor* t);
+int tensor_generate_random(tensor* s, tensor* result);
 void print_error(int error_code);
 
 

@@ -6,8 +6,6 @@
 #include "ops_tensor.h"
 #include "utils.h"
 
-// TUTTE LE FUNZIONI DA TESTARE
-
 int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
 
     if ((t1  ==  NULL)  ||  (t2  ==  NULL)  ||  (result  ==  NULL)) {
