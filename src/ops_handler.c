@@ -216,18 +216,18 @@ int handle_or_op(tensor** stack, int* s_size, int* s_head) {
 }
 
 int handle_not_op(tensor** stack, int* s_size, int* s_head) {
-    tensor t1, result;
+    tensor t, result;
 
-    *s_head = pop(*stack, &t1, *s_head);
+    *s_head = pop(*stack, &t, *s_head);
     if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
 
-    int not_result = tensor_not(&t1, &result);
+    int not_result = tensor_not(&t, &result);
     if (not_result != ERR_SUCCESS) {
-        free(t1.values);
+        free(t.values);
         return not_result;
     }
 
-    free(t1.values);
+    free(t.values);
 
     *s_head = push(stack, result, s_size, *s_head);
     return ERR_SUCCESS;
@@ -488,6 +488,24 @@ int handle_max_op(tensor** stack, int* s_size, int* s_head) {
 
     free(t1.values);
     free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS;
+}
+
+int handle_sum_reduce_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t, result;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    int reduce_result = tensor_sum_reduce(&t, &result);
+    if (reduce_result != ERR_SUCCESS) {
+        free(t.values);
+        return reduce_result;
+    }
+
+    free(t.values);
 
     *s_head = push(stack, result, s_size, *s_head);
     return ERR_SUCCESS;

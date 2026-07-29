@@ -23,15 +23,7 @@ int tensor_add(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            res->values[i * res->columns + j] = t1->values[i * res->columns + j] + t2->values[i * res->columns + j];
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] + t2->values[i];
     }
@@ -57,15 +49,7 @@ int tensor_subtract(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            res->values[i * res->columns + j] = t1->values[i * res->columns + j] - t2->values[i * res->columns + j];
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] - t2->values[i];
     }
@@ -91,15 +75,7 @@ int tensor_multiply(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            res->values[i * res->columns + j] = t1->values[i * res->columns + j] * t2->values[i * res->columns + j];
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] * t2->values[i];
     }
@@ -125,15 +101,7 @@ int tensor_lt(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] < t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] < t2->values[i]);
     }
@@ -159,15 +127,7 @@ int tensor_gt(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] > t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] > t2->values[i]);
     }
@@ -193,15 +153,7 @@ int tensor_eq(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] == t2->values[i]);
     }
@@ -234,15 +186,7 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(t1->values[i] && t2->values[i]);
     }
@@ -275,15 +219,7 @@ int tensor_or(tensor* t1, tensor* t2, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(t1->values[i] || t2->values[i]);
     }
@@ -309,15 +245,7 @@ int tensor_not(tensor* t, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(!t->values[i]);
     }
@@ -350,15 +278,7 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         result->values[i] = mask->values[i] * t1->values[i] + (1 - mask->values[i]) * t2->values[i];
     }
@@ -381,21 +301,13 @@ int tensor_relu(tensor* t, tensor* result) {
 
     if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
-    /*
-    OPTIMIZE WITH OPENMP
-    for (int i = 0; i < res->rows; i++){
-        for (int j = 0; j < res->columns; j++){
-            result->values[i] = (t1->values[i] == t2->values[i]);
-        }
-    }
-    */
-
+    // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
         // Barnchless?
         if (t->values[i] > 0.0f) {
             result->values[i] = t->values[i];
         } else {
-            result->values[i] = 0.0f; // Explicitly assigns a positive zero
+            result->values[i] = 0.0f;
         }
     }
 
@@ -458,6 +370,30 @@ int tensor_element_max(tensor* t1, tensor* t2, tensor* result) {
         } else {
             result->values[i] = t2->values[i];
         }
+    }
+
+    return ERR_SUCCESS;
+
+}
+
+int tensor_sum_reduce(tensor* t, tensor* result) {
+
+    if ((t  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    }
+
+    result->columns = 1;
+    result->rows = 1;
+    result->values = malloc(sizeof(float));
+
+    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY;
+    
+    int s_values = t->rows * t->columns;
+    result->values[0] = 0;
+
+    // OPTIMIZE 
+    for (int i = 0; i < s_values; i++) {
+        result->values[0] += t->values[i];
     }
 
     return ERR_SUCCESS;

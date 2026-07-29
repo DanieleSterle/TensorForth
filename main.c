@@ -312,7 +312,7 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di riduzione */
         case 'S':
-            /* code */
+            status = handle_sum_reduce_op(&stack, &s_size, &s_head);
             break;
 
         /* Operazioni di filling di tensori */
