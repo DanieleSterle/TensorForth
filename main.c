@@ -39,7 +39,6 @@ int main(int argc, char *argv[]) {
     if (file  ==  NULL) {
         fprintf(stderr, "File: '%s'\n", argv[1]); 
         print_error(ERR_FILE_OPEN);
-        // Clean up the stack since it was allocated!
         free_all(NULL, stack, s_head, NULL);
         return 1;
     }
@@ -302,13 +301,13 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni elemento per elemento */
         case 'R':
-            /* code */
+            status = handle_relu_op(&stack, &s_size, &s_head);
             break;
         case 'm':
-            /* code */
+            status = handle_min_op(&stack, &s_size, &s_head);
             break;
         case 'M':
-            /* code */
+            status = handle_max_op(&stack, &s_size, &s_head);
             break;
 
         /* Operazioni di riduzione */

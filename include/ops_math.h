@@ -19,4 +19,10 @@ int tensor_not(tensor* t1, tensor* result);
 
 int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result);
 
+int tensor_relu(tensor* t1, tensor* result);
+int tensor_element_min(tensor* t1, tensor* t2, tensor* result);
+int tensor_element_max(tensor* t1, tensor* t2, tensor* result);
+
+int tensor_sum_reduce(tensor* t, tensor* result);
+
 #endif

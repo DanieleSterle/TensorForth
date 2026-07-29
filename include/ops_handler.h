@@ -26,6 +26,10 @@ int handle_get_shape_op(tensor** stack, int* s_size, int* s_head);
 
 int handle_random_op(tensor** stack, int* s_size, int* s_head);
 
+int handle_relu_op(tensor** stack, int* s_size, int* s_head);
+int handle_min_op(tensor** stack, int* s_size, int* s_head);
+int handle_max_op(tensor** stack, int* s_size, int* s_head);
+
 /*
 
 random number

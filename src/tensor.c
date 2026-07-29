@@ -12,7 +12,6 @@ int tensor_reshape(tensor* t, tensor* s) {
         return ERR_NULL_PTR;
     }
 
-    // PASSARE [ n ] dovrebbe dare errore?
     int vector_result = is_vector(s);
     if (vector_result  !=  ERR_SUCCESS) return vector_result;
 

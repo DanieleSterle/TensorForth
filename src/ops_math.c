@@ -366,3 +366,101 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
     return ERR_SUCCESS;
 
 }
+
+int tensor_relu(tensor* t, tensor* result) {
+
+    if ((t  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    }
+
+    result->columns = t->columns;
+    result->rows = t->rows;
+
+    int s_values = result->rows * result->columns;
+    result->values = malloc(sizeof(float) * s_values);
+
+    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+
+    /*
+    OPTIMIZE WITH OPENMP
+    for (int i = 0; i < res->rows; i++){
+        for (int j = 0; j < res->columns; j++){
+            result->values[i] = (t1->values[i] == t2->values[i]);
+        }
+    }
+    */
+
+    for (int i = 0; i < s_values; i++) {
+        // Barnchless?
+        if (t->values[i] > 0.0f) {
+            result->values[i] = t->values[i];
+        } else {
+            result->values[i] = 0.0f; // Explicitly assigns a positive zero
+        }
+    }
+
+    return ERR_SUCCESS;
+
+}
+
+int tensor_element_min(tensor* t1, tensor* t2, tensor* result) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    }
+
+    int shape_result = shape_cmp(t1, t2);
+    if (shape_result != ERR_SUCCESS) return shape_result;
+
+    result->columns = t1->columns;
+    result->rows = t1->rows;
+
+    int s_values = result->rows * result->columns;
+    result->values = malloc(sizeof(float) * s_values);
+
+    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+
+    for (int i = 0; i < s_values; i++) {
+        // Branchless?
+        if (t1->values[i] < t2->values[i]) {
+            result->values[i] = t1->values[i];
+        } else {
+            result->values[i] = t2->values[i];
+        }
+    }
+
+    return ERR_SUCCESS;
+
+}
+
+int tensor_element_max(tensor* t1, tensor* t2, tensor* result) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    }
+
+    int shape_result = shape_cmp(t1, t2);
+    if (shape_result != ERR_SUCCESS) return shape_result;
+
+    result->columns = t1->columns;
+    result->rows = t1->rows;
+
+    int s_values = result->rows * result->columns;
+    result->values = malloc(sizeof(float) * s_values);
+
+    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+
+    
+    for (int i = 0; i < s_values; i++) {
+        // Branchless?
+        if (t1->values[i] > t2->values[i]) {
+            result->values[i] = t1->values[i];
+        } else {
+            result->values[i] = t2->values[i];
+        }
+    }
+
+    return ERR_SUCCESS;
+
+}
+

@@ -30,7 +30,7 @@ int handle_add_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_subtract_op(tensor** stack, int* s_size, int* s_head) {
@@ -56,7 +56,7 @@ int handle_subtract_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_multiply_op(tensor** stack, int* s_size, int* s_head) {
@@ -82,7 +82,7 @@ int handle_multiply_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_lt_op(tensor** stack, int* s_size, int* s_head) {
@@ -108,7 +108,7 @@ int handle_lt_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_gt_op(tensor** stack, int* s_size, int* s_head) {
@@ -134,7 +134,7 @@ int handle_gt_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_eq_op(tensor** stack, int* s_size, int* s_head) {
@@ -160,7 +160,7 @@ int handle_eq_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_and_op(tensor** stack, int* s_size, int* s_head) {
@@ -186,7 +186,7 @@ int handle_and_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_or_op(tensor** stack, int* s_size, int* s_head) {
@@ -212,7 +212,7 @@ int handle_or_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_not_op(tensor** stack, int* s_size, int* s_head) {
@@ -230,7 +230,7 @@ int handle_not_op(tensor** stack, int* s_size, int* s_head) {
     free(t1.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_select_op(tensor** stack, int* s_size, int* s_head) {
@@ -265,7 +265,7 @@ int handle_select_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_matmul_op(tensor** stack, int* s_size, int* s_head) {
@@ -291,7 +291,7 @@ int handle_matmul_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_dot_op(tensor** stack, int* s_size, int* s_head) {
@@ -317,7 +317,7 @@ int handle_dot_op(tensor** stack, int* s_size, int* s_head) {
     free(t2.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_conv2d_op(tensor** stack, int* s_size, int* s_head) {
@@ -343,7 +343,7 @@ int handle_conv2d_op(tensor** stack, int* s_size, int* s_head) {
     free(k.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_reshape_op(tensor** stack, int* s_size, int* s_head) {
@@ -368,7 +368,7 @@ int handle_reshape_op(tensor** stack, int* s_size, int* s_head) {
     free(s.values);
 
     *s_head = push(stack, t, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_ravel_op(tensor** stack, int* s_size, int* s_head) {
@@ -384,7 +384,7 @@ int handle_ravel_op(tensor** stack, int* s_size, int* s_head) {
     }
 
     *s_head = push(stack, t, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_get_shape_op(tensor** stack, int* s_size, int* s_head) {
@@ -402,7 +402,7 @@ int handle_get_shape_op(tensor** stack, int* s_size, int* s_head) {
     free(t.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
 
 int handle_random_op(tensor** stack, int* s_size, int* s_head) {
@@ -420,8 +420,79 @@ int handle_random_op(tensor** stack, int* s_size, int* s_head) {
     free(s.values);
 
     *s_head = push(stack, result, s_size, *s_head);
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
+
+int handle_relu_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t, result;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    int relu_result = tensor_relu(&t, &result);
+    if (relu_result != ERR_SUCCESS) {
+        free(t.values);
+        return relu_result;
+    }
+
+    free(t.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS;
+}
+
+int handle_min_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t1, t2, result;
+
+    *s_head = pop(*stack, &t1, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t2, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(t1.values);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int min_result = tensor_element_min(&t1, &t2, &result);
+    if (min_result != ERR_SUCCESS) {
+        free(t1.values);
+        free(t2.values);
+        return min_result;
+    }
+
+    free(t1.values);
+    free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS;
+}
+
+int handle_max_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t1, t2, result;
+
+    *s_head = pop(*stack, &t1, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t2, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(t1.values);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int max_result = tensor_element_max(&t1, &t2, &result);
+    if (max_result != ERR_SUCCESS) {
+        free(t1.values);
+        free(t2.values);
+        return max_result;
+    }
+
+    free(t1.values);
+    free(t2.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS;
+}
+
 
 /*
 
@@ -441,5 +512,5 @@ int handle_print_op(tensor** stack, int* s_head) {
     tensor_print(&t);
     free(t.values);
 
-    return ERR_SUCCESS; // 0 means the whole stack operation succeeded
+    return ERR_SUCCESS;
 }
