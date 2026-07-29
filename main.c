@@ -317,7 +317,7 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di filling di tensori */
         case 'f':
-            /* code */
+            status = handle_fill_op(&stack, &s_size, &s_head);
             break;
 
         /* Operazioni di utilità */

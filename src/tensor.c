@@ -86,3 +86,59 @@ int tensor_get_shape(tensor* t, tensor* result) {
 
     return ERR_SUCCESS;
 }
+
+int tensor_fill(tensor* s, tensor* v, tensor* result) {
+
+    if ((s  ==  NULL)  ||  (v  ==  NULL)  ||  (result  ==  NULL)) {
+        return ERR_NULL_PTR;
+    } 
+
+    int vector_result = is_vector(s);
+    if (vector_result  !=  ERR_SUCCESS) return vector_result;
+
+    int s_len = s->rows * s->columns;
+
+    if ((s_len < 1)  ||  (s_len > 2)) {
+        return ERR_SHAPE_MISMATCH; 
+    }
+
+    int new_rows;
+    int new_cols;
+
+    if (s_len == 2) {
+        // shape is 2D Matrix
+        new_rows = (int)s->values[0];
+        new_cols = (int)s->values[1];
+    } else {
+        // shape is 1D Vector 
+        new_rows = 1;
+        new_cols = (int)s->values[0];
+    }
+
+    if ((new_rows <= 0)  ||  (new_cols <= 0)) {
+        return ERR_SHAPE_MISMATCH;
+    }
+
+    result->columns = new_cols;
+    result->rows = new_rows;
+
+    int s_values = result->rows * result->columns;
+    int v_len = v->rows * v->columns;
+
+    if (s_values % v_len != 0)  {
+        return ERR_SHAPE_MISMATCH; 
+    }
+
+    result->values = malloc(sizeof(float) * s_values);
+
+    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+
+    // OPTIMIZE
+    for (int i = 0; i < s_values; i++) {
+        int idx = i % v_len;
+        result->values[i] = v->values[idx];
+    }
+
+    return ERR_SUCCESS;
+
+}

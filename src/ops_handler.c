@@ -511,15 +511,31 @@ int handle_sum_reduce_op(tensor** stack, int* s_size, int* s_head) {
     return ERR_SUCCESS;
 }
 
+int handle_fill_op(tensor** stack, int* s_size, int* s_head) {
+    tensor s, v, result;
 
-/*
+    *s_head = pop(*stack, &v, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
 
-random number
-element-wise
-reduction
-filling
+    *s_head = pop(*stack, &s, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free(v.values);
+        return ERR_STACK_UNDERFLOW;
+    }
 
-*/
+    int add_result = tensor_fill(&s, &v, &result);
+    if (add_result != ERR_SUCCESS) {
+        free(v.values);
+        free(s.values);
+        return add_result;
+    }
+
+    free(v.values);
+    free(s.values);
+
+    *s_head = push(stack, result, s_size, *s_head);
+    return ERR_SUCCESS;
+}
 
 int handle_print_op(tensor** stack, int* s_head) {
     tensor t;

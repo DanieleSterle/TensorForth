@@ -32,13 +32,6 @@ int handle_max_op(tensor** stack, int* s_size, int* s_head);
 
 int handle_sum_reduce_op(tensor** stack, int* s_size, int* s_head);
 
-/*
-
-random number
-element-wise
-reduction
-filling
-
-*/
+int handle_fill_op(tensor** stack, int* s_size, int* s_head);
 
 int handle_print_op(tensor** stack, int* s_head);
