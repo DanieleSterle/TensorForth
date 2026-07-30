@@ -22,18 +22,15 @@ int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
     int matmul_shape_result = shape_cmp_matmul(t1, t2);
     if (matmul_shape_result != ERR_SUCCESS) return matmul_shape_result;
 
-    result->columns = t2->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t2->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE WITH OPENMP & INDEXES
-    // t2 should be in COLUMN MAJOR
-
-
+    // t2 should be in COLUMN MAJOR ?
     for (int i = 0; i < result->rows; i++){
         for (int j = 0; j < result->columns; j++){
             float sum = 0.0f;
@@ -60,11 +57,12 @@ int tensor_dot(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp_dot(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = 1;
-    result->rows = 1;
-    result->values = malloc(sizeof(float));
+    int create_tensor_result = create_tensor(result, NULL, 1, 1);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+    int s_values = result->rows * result->columns;
 
     // OPTIMIZE WITH OPENMP  
     float sum = 0.0f;
@@ -92,13 +90,12 @@ int tensor_conv2d(tensor* t, tensor* k, tensor* result) {
     matrix_result = is_matrix(k);
     if (matrix_result != ERR_SUCCESS) return matrix_result;
 
-    result->columns = t->columns;
-    result->rows = t->rows;
+    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     int offset_row = k->rows / 2;
     int offset_col = k->columns / 2;

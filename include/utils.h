@@ -33,6 +33,7 @@ typedef enum {
     ERR_INVALID_NUMBER = -17
 } error_code;
 
+void free_tensor(tensor* t);
 void free_all(FILE* fd, tensor* stack, int s_stack, float* values);
 int shape_cmp(tensor* t1, tensor* t2);
 int shape_cmp_matmul(tensor* t1, tensor* t2);

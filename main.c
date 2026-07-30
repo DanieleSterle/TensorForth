@@ -194,10 +194,11 @@ int main(int argc, char *argv[]) {
             //printf("ho shrinkato correttamente da %d a %d", old_v_size, v_size);
 
             tensor new_tensor;
-            if (create_tensor(&new_tensor, values, 1, v_size)  ==  -1) {
-                print_error(ERR_OUT_OF_MEMORY); // Or custom ERR_TENSOR_CREATION
+            int create_tensor_result = create_tensor(&new_tensor, values, 1, v_size);
+            if (create_tensor_result  !=  0) {
+                print_error(create_tensor_result);
                 free_all(file, stack, s_head, values);
-                return ERR_OUT_OF_MEMORY;
+                return create_tensor_result;
             }
 
             s_head = push(&stack, new_tensor, &s_size, s_head);
@@ -327,16 +328,16 @@ int main(int argc, char *argv[]) {
 
         /* Operazioni di manipolazione dello stack */
         case 'd':
-            /* code */
+            status = stack_dup(&stack, &s_size, &s_head);
             break;
         case 's':
-            /* code */
+            status = stack_swap(&stack, &s_size, &s_head);
             break;
         case 'o':
-            /* code */
+            status = stack_over(&stack, &s_size, &s_head);
             break;
         case 'D':
-            /* code */
+            status = stack_drop(&stack, &s_head);
             break;
 
         /* I/O operations */

@@ -71,18 +71,13 @@ int tensor_get_shape(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    float* values = (float*) malloc(sizeof(float) * 2);
-
-    if (values  ==  NULL) {
-        return ERR_OUT_OF_MEMORY;
+    int create_tensor_result = create_tensor(result, NULL, 1, 2);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
     }
 
-    values[0] = t->rows;
-    values[1] = t->columns;
-
-    result->values = values;
-    result->rows = 1;
-    result->columns = 2;
+    result->values[0] = t->rows;
+    result->values[1] = t->columns;
 
     return ERR_SUCCESS;
 }
@@ -119,9 +114,6 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
         return ERR_SHAPE_MISMATCH;
     }
 
-    result->columns = new_cols;
-    result->rows = new_rows;
-
     int s_values = result->rows * result->columns;
     int v_len = v->rows * v->columns;
 
@@ -129,9 +121,10 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
         return ERR_SHAPE_MISMATCH; 
     }
 
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
+    int create_tensor_result = create_tensor(result, NULL, new_rows, new_cols);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {

@@ -6,6 +6,21 @@
 #include <stdlib.h>
 #include "utils.h"
 
+void free_tensor(tensor* t) {
+    if ((t  ==  NULL)  ||  (t->ref_count  ==  NULL)) {
+        return;
+    }
+
+    (*t->ref_count)--;
+
+    if ((*t->ref_count)  ==  0) {
+        if (t->values  !=  NULL) {
+            free(t->values);
+        }
+        free(t->ref_count);
+    }
+}
+
 void free_all(FILE* file, tensor* stack, int s_stack, float* values) {
 
     if (file  !=  NULL) {

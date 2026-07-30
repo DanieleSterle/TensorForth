@@ -50,7 +50,7 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 }
 
 int pop(tensor* stack, tensor* t, int idx_head) {
-    // Optional but recommended: Check for stack underflow
+
     if (idx_head <= 0) {
         return ERR_STACK_UNDERFLOW;
     }
@@ -59,25 +59,51 @@ int pop(tensor* stack, tensor* t, int idx_head) {
     idx_head--; 
 
     // 2. Dereference the pointer and assign the tensor to it
-    *t = stack[idx_head]; 
+    *t = stack[idx_head];
 
     // 3. Return the updated index
     return idx_head;
 }
 
+// CAMBIARE NOME?
 int create_tensor(tensor* t, float* values, int rows, int columns) {
-    // Error handling: Check for NULL pointers or invalid dimensions
-    if (t == NULL || values == NULL) {
+
+    if (t  ==  NULL) {
         return ERR_NULL_PTR; 
     }
     
-    if (rows <= 0 || columns <= 0) {
+    if ((rows <= 0)  ||  (columns <= 0)) {
         return ERR_SHAPE_MISMATCH; 
     }
 
-    t->values = values;
     t->rows = rows;
     t->columns = columns;
+
+    int newly_allocated = 0;
+
+    if (values  ==  NULL) {
+        int s_values = rows * columns;
+        float* temp = (float*) malloc(sizeof(float) * s_values);
+
+        if (temp  ==  NULL) return ERR_OUT_OF_MEMORY;
+
+        t->values = temp;
+        newly_allocated = 1;
+
+    } else {
+        t->values = values;
+    }
+
+    t->ref_count = (int*) malloc(sizeof(int));
+    
+    if (t->ref_count  ==  NULL) {
+        if (newly_allocated  ==  1) {
+            free(t->values); 
+        }
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    (*t->ref_count) = 1;
 
     return ERR_SUCCESS;
 }
@@ -91,4 +117,93 @@ void free_stack(tensor* stack, int idx_head){
     }
 
     free(stack);
+}
+
+int stack_dup(tensor** stack, int* s_size, int* s_head) {
+
+    if (*s_head <= 0) {
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    tensor temp = (*stack)[*s_head - 1];
+    (*temp.ref_count)++;
+
+    int push_result = push(stack, temp, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&temp); 
+        return push_result;  
+    }
+
+    *s_head = push_result; 
+    return ERR_SUCCESS;
+
+}
+
+int stack_swap(tensor** stack, int* s_size, int* s_head) {
+    tensor t1, t2;
+
+    *s_head = pop(*stack, &t1, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &t2, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free_tensor(&t1);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int push_result = push(stack, t1, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&t1);
+        free_tensor(&t2);
+        return push_result;  
+    }
+
+    *s_head = push_result; 
+
+    push_result = push(stack, t2, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&t2); 
+        return push_result;  
+    }
+
+    *s_head = push_result; 
+    return ERR_SUCCESS;
+}
+
+int stack_over(tensor** stack, int* s_size, int* s_head) {
+
+    if (*s_head <= 1) {
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    tensor temp = (*stack)[*s_head - 2];
+    (*temp.ref_count)++;
+
+    int push_result = push(stack, temp, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&temp); 
+        return push_result;  
+    }
+
+    *s_head = push_result; 
+    return ERR_SUCCESS;
+}
+
+
+int stack_drop(tensor** stack, int* s_head) {
+
+    if (*s_head <= 0) {
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    tensor temp;
+    *s_head = pop(*stack, &temp, *s_head);
+    free_tensor(&temp);
+
+    return ERR_SUCCESS;
+
 }

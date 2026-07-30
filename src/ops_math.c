@@ -15,13 +15,12 @@ int tensor_add(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -41,13 +40,12 @@ int tensor_subtract(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -67,13 +65,12 @@ int tensor_multiply(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -93,13 +90,12 @@ int tensor_lt(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -119,13 +115,12 @@ int tensor_gt(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -145,13 +140,12 @@ int tensor_eq(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -178,13 +172,12 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result) {
     is_bool = is_boolean(t2);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -211,13 +204,12 @@ int tensor_or(tensor* t1, tensor* t2, tensor* result) {
     is_bool = is_boolean(t2);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -237,13 +229,12 @@ int tensor_not(tensor* t, tensor* result) {
     int is_bool = is_boolean(t);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    result->columns = t->columns;
-    result->rows = t->rows;
+    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -270,13 +261,12 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
     int is_bool = is_boolean(mask);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -293,13 +283,12 @@ int tensor_relu(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    result->columns = t->columns;
-    result->rows = t->rows;
+    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     // OPTIMIZE
     for (int i = 0; i < s_values; i++) {
@@ -324,13 +313,12 @@ int tensor_element_min(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     for (int i = 0; i < s_values; i++) {
         // Branchless?
@@ -354,13 +342,12 @@ int tensor_element_max(tensor* t1, tensor* t2, tensor* result) {
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    result->columns = t1->columns;
-    result->rows = t1->rows;
+    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
     int s_values = result->rows * result->columns;
-    result->values = malloc(sizeof(float) * s_values);
-
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY; 
 
     
     for (int i = 0; i < s_values; i++) {
@@ -382,12 +369,11 @@ int tensor_sum_reduce(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    result->columns = 1;
-    result->rows = 1;
-    result->values = malloc(sizeof(float));
+    int create_tensor_result = create_tensor(result, NULL, 1, 1);
+    if (create_tensor_result  !=  ERR_SUCCESS) {
+        return create_tensor_result;
+    }
 
-    if (result->values  ==  NULL) return ERR_OUT_OF_MEMORY;
-    
     int s_values = t->rows * t->columns;
     result->values[0] = 0;
 
@@ -399,4 +385,3 @@ int tensor_sum_reduce(tensor* t, tensor* result) {
     return ERR_SUCCESS;
 
 }
-

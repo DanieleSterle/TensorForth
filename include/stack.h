@@ -11,6 +11,7 @@ typedef struct {
     float* values;
     int rows;
     int columns;
+    int* ref_count;
 } tensor;
 
 int create_stack(tensor** stack);
@@ -19,9 +20,9 @@ int pop(tensor* stack, tensor* t, int idx_head);
 int create_tensor(tensor* t, float* values, int rows, int columns);
 void free_stack(tensor* stack, int idx_head);
 
-// duplicate
-// swap
-// over
-// drop
+int stack_dup(tensor** stack, int* s_size, int* s_head);
+int stack_swap(tensor** stack, int* s_size, int* s_head);
+int stack_over(tensor** stack, int* s_size, int* s_head);
+int stack_drop(tensor** stack, int* s_head);
 
 #endif
