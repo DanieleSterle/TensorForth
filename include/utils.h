@@ -7,6 +7,16 @@
 #include <stdlib.h>
 #include "stack.h"
 
+#define ASSERT_NUMERIC(t) \
+    if ((t)->type != TYPE_NUMERIC) { \
+        return ERR_EXPECTED_NUMERIC; \
+    }
+
+#define ASSERT_STRING(t) \
+    if ((t)->type != TYPE_NUMERIC) { \
+        return ERR_EXPECTED_NUMERIC; \
+    }
+
 typedef enum {
     ERR_SUCCESS = 0,
     // Memory & Stack
@@ -30,7 +40,10 @@ typedef enum {
     ERR_INVALID_CHAR = -14,
     ERR_BUFFER_OVERFLOW = -15,
     ERR_EMPTY_TENSOR = -16,
-    ERR_INVALID_NUMBER = -17
+    ERR_INVALID_NUMBER = -17,
+
+    ERR_EXPECTED_NUMERIC = -20,
+    ERR_EXPECTED_STRING = -21 
 } error_code;
 
 void free_tensor(tensor* t);
@@ -45,6 +58,5 @@ int is_vector(tensor* t);
 void tensor_print(tensor* t);
 int tensor_generate_random(tensor* s, tensor* result);
 void print_error(int error_code);
-
 
 #endif

@@ -66,6 +66,12 @@ int main(int argc, char *argv[]) {
                 free_all(file, stack, s_head, NULL);
                 return ERR_SYNTAX;
             }
+
+            if (last_char  ==  '"') {
+                print_error(ERR_SYNTAX);
+                free_all(file, stack, s_head, NULL);
+                return ERR_SYNTAX;
+            }
             
             float* values = (float*) malloc(sizeof(float) * DEF_VALUES_SIZE);
             int v_idx = 0;
@@ -95,7 +101,6 @@ int main(int argc, char *argv[]) {
                         // If b_idx > 0, it means we just finished reading a float
                         buffer[b_idx] = '\0';
                         //float curr_float = atof(buffer);
-
 
                         char* endptr;
                         float curr_float = (float)strtod(buffer, &endptr);
@@ -194,11 +199,11 @@ int main(int argc, char *argv[]) {
             //printf("ho shrinkato correttamente da %d a %d", old_v_size, v_size);
 
             tensor new_tensor;
-            int create_tensor_result = create_tensor(&new_tensor, values, 1, v_size);
-            if (create_tensor_result  !=  0) {
-                print_error(create_tensor_result);
+            int create_numeric_tensor_result = create_numeric_tensor(&new_tensor, values, 1, v_size);
+            if (create_numeric_tensor_result  !=  0) {
+                print_error(create_numeric_tensor_result);
                 free_all(file, stack, s_head, values);
-                return create_tensor_result;
+                return create_numeric_tensor_result;
             }
 
             s_head = push(&stack, new_tensor, &s_size, s_head);
@@ -226,7 +231,37 @@ int main(int argc, char *argv[]) {
         }
 
         if (curr == '"'){
-            //TODO: gestione file 
+
+            char buffer_file[BUFFER_SIZE];
+            int b_idx = 0;
+            last_char = '(';
+            
+            while((curr = getc(file))  !=  '"'){
+                
+                if (curr  ==  EOF) {
+                    print_error(ERR_UNEXPECTED_EOF);
+                    free_all(file, stack, s_head, NULL);
+                    return ERR_UNEXPECTED_EOF;
+                }
+
+                if (b_idx >= BUFFER_SIZE) { 
+                    // Handle error: filename too long
+                    print_error(ERR_BUFFER_OVERFLOW);
+                    free_all(file, stack, s_head, NULL);
+                    return ERR_BUFFER_OVERFLOW;
+                }
+
+                last_char = curr;
+                buffer_file[b_idx] = curr;
+                b_idx++;
+            }
+            
+            last_char = curr;
+            buffer_file[b_idx] = '\0';
+
+            printf("Filename read: %s\n", buffer_file);
+            //TODO: push
+            continue;
         }
 
         // int status; - quando tutte operazioni implementate

@@ -55,18 +55,15 @@ int pop(tensor* stack, tensor* t, int idx_head) {
         return ERR_STACK_UNDERFLOW;
     }
 
-    // 1. Decrement the index to point to the actual top t
     idx_head--; 
 
-    // 2. Dereference the pointer and assign the tensor to it
     *t = stack[idx_head];
 
-    // 3. Return the updated index
     return idx_head;
 }
 
 // CAMBIARE NOME?
-int create_tensor(tensor* t, float* values, int rows, int columns) {
+int create_numeric_tensor(tensor* t, float* values, int rows, int columns) {
 
     if (t  ==  NULL) {
         return ERR_NULL_PTR; 
@@ -76,6 +73,7 @@ int create_tensor(tensor* t, float* values, int rows, int columns) {
         return ERR_SHAPE_MISMATCH; 
     }
 
+    t->type = TYPE_NUMERIC;
     t->rows = rows;
     t->columns = columns;
 
@@ -108,12 +106,31 @@ int create_tensor(tensor* t, float* values, int rows, int columns) {
     return ERR_SUCCESS;
 }
 
+// CAMBIARE NOME?
+int create_string_tensor(tensor* t, char* string) {
+    if ((t  ==  NULL)  ||  (string  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+    
+    t->type = TYPE_STRING;
+    t->filename = string;
+
+    t->ref_count = (int*) malloc(sizeof(int));
+    if (t->ref_count  ==  NULL) {
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    (*t->ref_count) = 1;
+
+    return ERR_SUCCESS;
+}
+
 void free_stack(tensor* stack, int idx_head){
 
     if (stack == NULL) return;
 
     for (int i = 0; i < idx_head; i++){
-        free(stack[i].values);
+        free_tensor(&stack[i]);
     }
 
     free(stack);

@@ -7,16 +7,24 @@
 #include "utils.h"
 
 void free_tensor(tensor* t) {
-    if ((t  ==  NULL)  ||  (t->ref_count  ==  NULL)) {
+    if ((t == NULL) || (t->ref_count == NULL)) {
         return;
     }
 
     (*t->ref_count)--;
 
-    if ((*t->ref_count)  ==  0) {
-        if (t->values  !=  NULL) {
-            free(t->values);
+    if ((*t->ref_count) == 0) {
+        
+        if (t->type == TYPE_NUMERIC) {
+            if (t->values != NULL) {
+                free(t->values);
+            }
+        } else if (t->type == TYPE_STRING) {
+            if (t->filename != NULL) {
+                free(t->filename);
+            }
         }
+
         free(t->ref_count);
     }
 }
@@ -37,6 +45,9 @@ int shape_cmp(tensor* t1, tensor* t2) {
         return ERR_NULL_PTR; 
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     if ((t1->rows  ==  t2->rows)  &&  (t1->columns  ==  t2->columns)){
         return ERR_SUCCESS;
     }
@@ -50,6 +61,9 @@ int shape_cmp_matmul(tensor* t1, tensor* t2) {
     if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
         return ERR_NULL_PTR; 
     }
+
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
 
     if (t1->columns  ==  t2->rows){
         return ERR_SUCCESS;
@@ -65,6 +79,9 @@ int shape_cmp_dot(tensor* t1, tensor* t2) {
         return ERR_NULL_PTR; 
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int len_t1 = t1->rows * t1->columns;
     int len_t2 = t2->rows * t2->columns;
 
@@ -78,6 +95,8 @@ int shape_cmp_dot(tensor* t1, tensor* t2) {
 int is_boolean(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR; 
+
+    ASSERT_NUMERIC(t);
 
     /*
     OPTIMIZE WITH OPENMP
@@ -98,8 +117,11 @@ int is_boolean(tensor* t) {
 }
 
 int is_matrix(tensor* t) {
-
+    
     if (t  ==  NULL) return ERR_NULL_PTR;
+
+    ASSERT_NUMERIC(t);
+
 
     if ((t->rows  !=  1)  &&  (t->columns  !=  1)){
         return ERR_SUCCESS;
@@ -112,6 +134,8 @@ int is_matrix(tensor* t) {
 int is_vector(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR;
+
+    ASSERT_NUMERIC(t);
 
     if ((t->rows == 1) || (t->columns == 1)) {
         return ERR_SUCCESS;
@@ -126,6 +150,8 @@ void tensor_print(tensor* t) {
     if (t == NULL) {
         return;
     }
+
+    if (t->type != TYPE_NUMERIC) return;
 
     // shape: rows columns
     printf("Tensor(shape=[");
@@ -176,15 +202,12 @@ int tensor_generate_random(tensor* s, tensor* result) {
         return ERR_SHAPE_MISMATCH;
     }
 
-    result->columns = cols;
-    result->rows = rows;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, rows, cols);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
+    }
 
     int size = cols * rows;
-    result->values = (float*) malloc(sizeof(float) * size);
-
-    if (result->values  ==  NULL) {
-        return ERR_OUT_OF_MEMORY;
-    }
 
     // NON OTTIMIZZARE
     for (int i = 0; i < size; i++){

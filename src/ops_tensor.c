@@ -12,6 +12,9 @@ int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int matrix_result;
     matrix_result = is_matrix(t1);
     if (matrix_result != ERR_SUCCESS) return matrix_result;
@@ -22,12 +25,10 @@ int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
     int matmul_shape_result = shape_cmp_matmul(t1, t2);
     if (matmul_shape_result != ERR_SUCCESS) return matmul_shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t2->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t2->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
-
-    int s_values = result->rows * result->columns;
 
     // OPTIMIZE WITH OPENMP & INDEXES
     // t2 should be in COLUMN MAJOR ?
@@ -54,15 +55,16 @@ int tensor_dot(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp_dot(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, 1, 1);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, 1, 1);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
-
-    int s_values = result->rows * result->columns;
 
     // OPTIMIZE WITH OPENMP  
     float sum = 0.0f;
@@ -83,6 +85,9 @@ int tensor_conv2d(tensor* t, tensor* k, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t);
+    ASSERT_NUMERIC(k);
+
     int matrix_result;
     matrix_result = is_matrix(t);
     if (matrix_result != ERR_SUCCESS) return matrix_result;
@@ -90,12 +95,10 @@ int tensor_conv2d(tensor* t, tensor* k, tensor* result) {
     matrix_result = is_matrix(k);
     if (matrix_result != ERR_SUCCESS) return matrix_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t->rows, t->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
-
-    int s_values = result->rows * result->columns;
 
     int offset_row = k->rows / 2;
     int offset_col = k->columns / 2;

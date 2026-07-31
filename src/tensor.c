@@ -12,6 +12,9 @@ int tensor_reshape(tensor* t, tensor* s) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t);
+    ASSERT_NUMERIC(s);
+
     int vector_result = is_vector(s);
     if (vector_result  !=  ERR_SUCCESS) return vector_result;
 
@@ -57,6 +60,8 @@ int tensor_ravel(tensor* t) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t);
+
     int t_shape = t->rows * t->columns;
 
     t->rows = 1;
@@ -71,9 +76,11 @@ int tensor_get_shape(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    int create_tensor_result = create_tensor(result, NULL, 1, 2);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    ASSERT_NUMERIC(t);
+
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, 1, 2);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     result->values[0] = t->rows;
@@ -86,7 +93,10 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
 
     if ((s  ==  NULL)  ||  (v  ==  NULL)  ||  (result  ==  NULL)) {
         return ERR_NULL_PTR;
-    } 
+    }
+
+    ASSERT_NUMERIC(s);
+    ASSERT_NUMERIC(v);
 
     int vector_result = is_vector(s);
     if (vector_result  !=  ERR_SUCCESS) return vector_result;
@@ -121,9 +131,9 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
         return ERR_SHAPE_MISMATCH; 
     }
 
-    int create_tensor_result = create_tensor(result, NULL, new_rows, new_cols);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, new_rows, new_cols);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     // OPTIMIZE

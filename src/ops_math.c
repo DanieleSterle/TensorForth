@@ -12,12 +12,15 @@ int tensor_add(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -37,12 +40,15 @@ int tensor_subtract(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -62,12 +68,15 @@ int tensor_multiply(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -87,12 +96,15 @@ int tensor_lt(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -112,12 +124,15 @@ int tensor_gt(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -137,12 +152,15 @@ int tensor_eq(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -162,6 +180,9 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
@@ -172,9 +193,9 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result) {
     is_bool = is_boolean(t2);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -194,6 +215,9 @@ int tensor_or(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
@@ -204,9 +228,9 @@ int tensor_or(tensor* t1, tensor* t2, tensor* result) {
     is_bool = is_boolean(t2);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -226,12 +250,14 @@ int tensor_not(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t);
+
     int is_bool = is_boolean(t);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t->rows, t->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -251,6 +277,9 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result;
     shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
@@ -261,9 +290,9 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
     int is_bool = is_boolean(mask);
     if (is_bool != ERR_SUCCESS) return is_bool;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -283,9 +312,11 @@ int tensor_relu(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    int create_tensor_result = create_tensor(result, NULL, t->rows, t->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    ASSERT_NUMERIC(t);
+
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t->rows, t->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -310,12 +341,15 @@ int tensor_element_min(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -339,12 +373,15 @@ int tensor_element_max(tensor* t1, tensor* t2, tensor* result) {
         return ERR_NULL_PTR;
     }
 
+    ASSERT_NUMERIC(t1);
+    ASSERT_NUMERIC(t2);
+
     int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int create_tensor_result = create_tensor(result, NULL, t1->rows, t1->columns);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, t1->rows, t1->columns);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = result->rows * result->columns;
@@ -369,9 +406,11 @@ int tensor_sum_reduce(tensor* t, tensor* result) {
         return ERR_NULL_PTR;
     }
 
-    int create_tensor_result = create_tensor(result, NULL, 1, 1);
-    if (create_tensor_result  !=  ERR_SUCCESS) {
-        return create_tensor_result;
+    ASSERT_NUMERIC(t);
+
+    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, 1, 1);
+    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
+        return create_numeric_tensor_result;
     }
 
     int s_values = t->rows * t->columns;
