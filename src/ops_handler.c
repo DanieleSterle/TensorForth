@@ -702,3 +702,103 @@ int handle_print_op(tensor** stack, int* s_head) {
 
     return ERR_SUCCESS;
 }
+
+int handle_read_pgm_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t, result;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    int read_pgm_result = tensor_read_pgm(&t, &result);
+    if (read_pgm_result != ERR_SUCCESS) {
+        free_tensor(&t);
+        return read_pgm_result;
+    }
+
+    free_tensor(&t);
+
+    int push_result = push(stack, result, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&result); 
+        return push_result;  
+    }
+
+    *s_head = push_result;
+    return ERR_SUCCESS;
+}
+
+int handle_write_pgm_op(tensor** stack, int* s_head) {
+    tensor numeric_t, string_t;
+
+    *s_head = pop(*stack, &string_t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &numeric_t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free_tensor(&string_t);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int write_pgm_result = tensor_write_pgm(&string_t, &numeric_t);
+    if (write_pgm_result != ERR_SUCCESS) {
+        free_tensor(&numeric_t);
+        free_tensor(&string_t);
+        return write_pgm_result;
+    }
+
+    free_tensor(&numeric_t);
+    free_tensor(&string_t);
+
+    return ERR_SUCCESS;
+}
+
+int handle_read_mmap_op(tensor** stack, int* s_size, int* s_head) {
+    tensor t, result;
+
+    *s_head = pop(*stack, &t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    int read_mmap_result = tensor_read_mmap(&t, &result);
+    if (read_mmap_result != ERR_SUCCESS) {
+        free_tensor(&t);
+        return read_mmap_result;
+    }
+
+    free_tensor(&t);
+
+    int push_result = push(stack, result, s_size, *s_head);
+    
+    if (push_result < 0) { 
+        free_tensor(&result); 
+        return push_result;  
+    }
+    
+    *s_head = push_result;
+    return ERR_SUCCESS;
+}
+
+int handle_write_bin_op(tensor** stack, int* s_head) {
+    tensor numeric_t, string_t;
+
+    *s_head = pop(*stack, &string_t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
+
+    *s_head = pop(*stack, &numeric_t, *s_head);
+    if (*s_head == ERR_STACK_UNDERFLOW) {
+        free_tensor(&string_t);
+        return ERR_STACK_UNDERFLOW;
+    }
+
+    int write_bin_result = tensor_write_bin(&string_t, &numeric_t);
+    if (write_bin_result != ERR_SUCCESS) {
+        free_tensor(&numeric_t);
+        free_tensor(&string_t);
+        return write_bin_result;
+    }
+
+    free_tensor(&numeric_t);
+    free_tensor(&string_t);
+
+    return ERR_SUCCESS;
+}

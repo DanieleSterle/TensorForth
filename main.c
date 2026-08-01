@@ -208,6 +208,7 @@ int main(int argc, char *argv[]) {
 
             s_head = push(&stack, new_tensor, &s_size, s_head);
             
+            // MIGLIORARE
             if (s_head  ==  -1) {
                 print_error(ERR_STACK_OVERFLOW);
                 free_all(file, stack, s_head, values);
@@ -232,7 +233,7 @@ int main(int argc, char *argv[]) {
 
         if (curr == '"'){
 
-            char buffer_file[BUFFER_SIZE];
+            char buffer_file[512];
             int b_idx = 0;
             last_char = '(';
             
@@ -258,9 +259,25 @@ int main(int argc, char *argv[]) {
             
             last_char = curr;
             buffer_file[b_idx] = '\0';
+            
+            tensor new_tensor;
+            int create_string_tensor_result = create_string_tensor(&new_tensor, buffer_file);
+            if (create_string_tensor_result  !=  0) {
+                print_error(create_string_tensor_result);
+                free_all(file, stack, s_head, NULL);
+                return create_string_tensor_result;
+            }
 
-            printf("Filename read: %s\n", buffer_file);
-            //TODO: push
+            s_head = push(&stack, new_tensor, &s_size, s_head);
+            
+            // MIGLIORARE
+            if (s_head  <  0) {
+                print_error(ERR_STACK_OVERFLOW);
+                free_all(file, stack, s_head, NULL);
+                return ERR_STACK_OVERFLOW;
+            }
+
+            // printf("Ho fatto il push di Filename read: %s\n", buffer_file);
             continue;
         }
 
@@ -377,16 +394,16 @@ int main(int argc, char *argv[]) {
 
         /* I/O operations */
         case '(':
-            /* code */
+            status = handle_read_pgm_op(&stack, &s_size, &s_head);
             break;
         case ')':
-            /* code */
+            status = handle_write_pgm_op(&stack, &s_head);
             break;
         case '{':
-            /* code */
+            status = handle_read_mmap_op(&stack, &s_size, &s_head);
             break;
         case '}':
-            /* code */
+            status = handle_write_bin_op(&stack, &s_head);
             break;
         
         default:

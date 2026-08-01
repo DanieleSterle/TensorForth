@@ -3,11 +3,14 @@
 #ifndef TENSORFORTH_STACK_H
 #define TENSORFORTH_STACK_H
 
+#include <string.h>
+
 #define DEF_STACK_SIZE 4
 #define DEF_VALUES_SIZE 64
 
 typedef enum {
     TYPE_NUMERIC,
+    TYPE_NUMERIC_MMAP,
     TYPE_STRING
 } tensor_type;
 

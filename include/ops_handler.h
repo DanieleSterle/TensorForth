@@ -1,6 +1,7 @@
 // DANIELE STERLE SM3201594
 
 #include "stack.h"
+#include "io.h"
 
 int handle_add_op(tensor** stack, int* s_size, int* s_head);
 int handle_subtract_op(tensor** stack, int* s_size, int* s_head);
@@ -35,3 +36,9 @@ int handle_sum_reduce_op(tensor** stack, int* s_size, int* s_head);
 int handle_fill_op(tensor** stack, int* s_size, int* s_head);
 
 int handle_print_op(tensor** stack, int* s_head);
+
+int handle_read_pgm_op(tensor** stack, int* s_size, int* s_head);
+int handle_write_pgm_op(tensor** stack, int* s_head);
+int handle_read_mmap_op(tensor** stack, int* s_size, int* s_head);
+int handle_write_bin_op(tensor** stack, int* s_head);
+

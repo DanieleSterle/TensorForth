@@ -19,7 +19,23 @@ void free_tensor(tensor* t) {
             if (t->values != NULL) {
                 free(t->values);
             }
-        } else if (t->type == TYPE_STRING) {
+        } 
+        
+        if (t->type == TYPE_NUMERIC_MMAP) {
+            if (t->values != NULL) {
+                // 1. Calculate the exact total size of the file in memory
+                size_t total_size = sizeof(on_disk_tensor) + 
+                                   (t->rows * t->columns * sizeof(float));
+
+                // 2. Step backwards from t->values to find the original mmap pointer
+                void* original_mmap_ptr = (void*)((char*)t->values - sizeof(on_disk_tensor));
+
+                // 3. Unmap it!
+                munmap(original_mmap_ptr, total_size);
+            }
+        } 
+        
+        if (t->type == TYPE_STRING) {
             if (t->filename != NULL) {
                 free(t->filename);
             }
@@ -151,7 +167,7 @@ void tensor_print(tensor* t) {
         return;
     }
 
-    if (t->type != TYPE_NUMERIC) return;
+    if ((t->type  !=  TYPE_NUMERIC)  &&  (t->type  !=  TYPE_NUMERIC_MMAP)) return;
 
     // shape: rows columns
     printf("Tensor(shape=[");

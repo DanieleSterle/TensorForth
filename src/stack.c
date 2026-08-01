@@ -113,7 +113,15 @@ int create_string_tensor(tensor* t, char* string) {
     }
     
     t->type = TYPE_STRING;
-    t->filename = string;
+
+    int str_len = strlen(string);
+    t->filename = (char*) malloc(str_len + 1);
+    
+    if (t->filename == NULL) {
+        return ERR_OUT_OF_MEMORY;
+    }
+    
+    strcpy(t->filename, string);
 
     t->ref_count = (int*) malloc(sizeof(int));
     if (t->ref_count  ==  NULL) {

@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stack.h"
+#include "tensor.h"
+#include "io.h"
 
 #define ASSERT_NUMERIC(t) \
     if ((t)->type != TYPE_NUMERIC) { \
@@ -13,8 +15,8 @@
     }
 
 #define ASSERT_STRING(t) \
-    if ((t)->type != TYPE_NUMERIC) { \
-        return ERR_EXPECTED_NUMERIC; \
+    if ((t)->type != TYPE_STRING) { \
+        return ERR_EXPECTED_STRING; \
     }
 
 typedef enum {
@@ -43,7 +45,8 @@ typedef enum {
     ERR_INVALID_NUMBER = -17,
 
     ERR_EXPECTED_NUMERIC = -20,
-    ERR_EXPECTED_STRING = -21 
+    ERR_EXPECTED_STRING = -21,
+    ERR_IO = -29
 } error_code;
 
 void free_tensor(tensor* t);
