@@ -3,27 +3,21 @@
 // Stack memory and manipulation.
 // Implements stack push/pop logic and stack operators like d, s, o, and D.
 
-#include <stdlib.h>
 #include "stack.h"
-#include "utils.h"
 
 int create_stack(tensor** stack) {
-    int curr_stack_size = DEF_STACK_SIZE;
+    int curr_stack_size = INITIAL_STACK_CAPACITY;
 
-    // Se DEF_STACK_SIZE == 0, mettere 1
     if (curr_stack_size == 0) {
         curr_stack_size = 1;
     }
 
-    // Allocate memory and assign it to the dereferenced pointer
     *stack = malloc(sizeof(tensor) * curr_stack_size);
     
-    // Check if allocation failed
     if (*stack == NULL) {
         return ERR_OUT_OF_MEMORY;
     }
 
-    // Return the initial capacity
     return curr_stack_size;
 }
 
@@ -35,14 +29,13 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 
         tensor* temp = realloc(*stack, sizeof(tensor) * new_size);
         if (temp == NULL) {
-            return ERR_OUT_OF_MEMORY; // Allocation failed
+            return ERR_OUT_OF_MEMORY;
         }
 
-        *stack = temp;              // Update the caller's pointer
-        *curr_stack_size = new_size; // Update the caller's size variable
+        *stack = temp;
+        *curr_stack_size = new_size;
     }
 
-    // Insert the t using the dereferenced stack pointer
     (*stack)[idx_head] = t;
     idx_head++;
     
@@ -60,77 +53,6 @@ int pop(tensor* stack, tensor* t, int idx_head) {
     *t = stack[idx_head];
 
     return idx_head;
-}
-
-// CAMBIARE NOME?
-int create_numeric_tensor(tensor* t, float* values, int rows, int columns) {
-
-    if (t  ==  NULL) {
-        return ERR_NULL_PTR; 
-    }
-    
-    if ((rows <= 0)  ||  (columns <= 0)) {
-        return ERR_SHAPE_MISMATCH; 
-    }
-
-    t->type = TYPE_NUMERIC;
-    t->rows = rows;
-    t->columns = columns;
-
-    int newly_allocated = 0;
-
-    if (values  ==  NULL) {
-        int s_values = rows * columns;
-        float* temp = (float*) malloc(sizeof(float) * s_values);
-
-        if (temp  ==  NULL) return ERR_OUT_OF_MEMORY;
-
-        t->values = temp;
-        newly_allocated = 1;
-
-    } else {
-        t->values = values;
-    }
-
-    t->ref_count = (int*) malloc(sizeof(int));
-    
-    if (t->ref_count  ==  NULL) {
-        if (newly_allocated  ==  1) {
-            free(t->values); 
-        }
-        return ERR_OUT_OF_MEMORY;
-    }
-
-    (*t->ref_count) = 1;
-
-    return ERR_SUCCESS;
-}
-
-// CAMBIARE NOME?
-int create_string_tensor(tensor* t, char* string) {
-    if ((t  ==  NULL)  ||  (string  ==  NULL)) {
-        return ERR_NULL_PTR; 
-    }
-    
-    t->type = TYPE_STRING;
-
-    int str_len = strlen(string);
-    t->filename = (char*) malloc(str_len + 1);
-    
-    if (t->filename == NULL) {
-        return ERR_OUT_OF_MEMORY;
-    }
-    
-    strcpy(t->filename, string);
-
-    t->ref_count = (int*) malloc(sizeof(int));
-    if (t->ref_count  ==  NULL) {
-        return ERR_OUT_OF_MEMORY;
-    }
-
-    (*t->ref_count) = 1;
-
-    return ERR_SUCCESS;
 }
 
 void free_stack(tensor* stack, int idx_head){

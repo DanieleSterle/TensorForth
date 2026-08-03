@@ -3,12 +3,11 @@
 #ifndef TENSORFORTH_IO_H
 #define TENSORFORTH_IO_H
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include "stack.h"
+#include <unistd.h>
 #include "utils.h"
 #include "tensor.h"
 

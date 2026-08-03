@@ -3,13 +3,37 @@
 #ifndef TENSORFORTH_TENSOR_H
 #define TENSORFORTH_TENSOR_H
 
-
-#include "utils.h"
-#include "stack.h"
-
 #include <stdint.h>
 #include <sys/types.h>
+#include <string.h>
+#include <sys/mman.h>
+#include "utils.h"
+
 #define MAX_DIM 2
+
+typedef enum {
+    TYPE_NUMERIC,
+    TYPE_NUMERIC_MMAP,
+    TYPE_STRING
+} tensor_type;
+
+typedef struct {
+    // The tag to check what data is active
+    tensor_type type;
+    
+    union {                 
+        
+        struct {            
+            float* values;
+            int rows;
+            int columns;
+        };                  
+        
+        char* filename;
+    };
+    
+    int* ref_count;
+} tensor;
 
 typedef struct {
     int32_t shape[MAX_DIM];
@@ -17,10 +41,17 @@ typedef struct {
     off_t data_offset;
 } on_disk_tensor;
 
-int tensor_reshape(tensor* t, tensor* s);
-int tensor_ravel(tensor* t);
-int tensor_get_shape(tensor* t, tensor* result);
+int shape_cmp(tensor* t1, tensor* t2);
+int shape_cmp_matmul(tensor* t1, tensor* t2);
+int shape_cmp_dot(tensor* t1, tensor* t2);
+int is_boolean(tensor* t);
+int is_matrix(tensor* t);
+int is_vector(tensor* t);
 
-int tensor_fill(tensor* s, tensor* v, tensor* result);
+int tensor_init_numeric(tensor* t, float* values, int rows, int columns);
+int tensor_init_string(tensor* t, char* string);
+void free_tensor(tensor* t);
+
+void tensor_print(tensor* t);
 
 #endif

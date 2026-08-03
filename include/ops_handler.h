@@ -1,7 +1,15 @@
 // DANIELE STERLE SM3201594
 
-#include "stack.h"
+#ifndef TENSORFORTH_OPS_HANDLER_H
+#define TENSORFORTH_OPS_HANDLER_H
+
+#include "ops_math.h"
+#include "ops_tensor.h"
+#include "tensor.h"
+#include "utils.h"
 #include "io.h"
+#include "stack.h"
+#include <stdlib.h>
 
 int handle_add_op(tensor** stack, int* s_size, int* s_head);
 int handle_subtract_op(tensor** stack, int* s_size, int* s_head);
@@ -42,3 +50,4 @@ int handle_write_pgm_op(tensor** stack, int* s_head);
 int handle_read_mmap_op(tensor** stack, int* s_size, int* s_head);
 int handle_write_bin_op(tensor** stack, int* s_head);
 
+#endif

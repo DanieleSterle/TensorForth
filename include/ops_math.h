@@ -3,7 +3,8 @@
 #ifndef TENSORFORTH_OPS_MATH_H
 #define TENSORFORTH_OPS_MATH_H
 
-#include "stack.h"
+#include "utils.h"
+#include "tensor.h"
 
 int tensor_add(tensor* t1, tensor* t2, tensor* result);
 int tensor_subtract(tensor* t1, tensor* t2, tensor* result);

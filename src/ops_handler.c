@@ -1,11 +1,6 @@
 // DANIELE STERLE SM3201594
 
 #include "ops_handler.h"
-#include "ops_math.h"
-#include "ops_tensor.h"
-#include "tensor.h"
-#include "utils.h"
-#include <stdlib.h>
 
 int handle_add_op(tensor** stack, int* s_size, int* s_head) {
     tensor t1, t2, result;

@@ -14,18 +14,16 @@ int tensor_read_pgm(tensor* t, tensor* result) {
 
     FILE* out_file = fopen(t->filename, "rb");
     if (out_file  ==  NULL) {
-        // DEFINIRE ERRORE
-        return -1;
+        return ERR_FILE_OPEN;
     }
 
-    // 3. Parse the PGM Header
     char magic[3];
     int width, height, maxval;
     
     // Read the "P5" identifier
     if ((fscanf(out_file, "%2s", magic)  !=  1)  ||  (magic[0]  !=  'P')  ||  (magic[1]  !=  '5')) {
         fclose(out_file);
-        return ERR_IO; // Not a valid binary PGM
+        return ERR_INVALID_PGM;
     }
 
     // (Note: A truly robust PGM parser skips comment lines starting with '#' here)
@@ -39,7 +37,6 @@ int tensor_read_pgm(tensor* t, tensor* result) {
     // Consume the single whitespace character that separates the header from the binary data
     fgetc(out_file);
 
-    // 4. Allocate memory for the raw 8-bit image data
     int num_pixels = width * height;
     unsigned char* raw_pixels = (unsigned char*) malloc(num_pixels * sizeof(unsigned char));
     if (raw_pixels  ==  NULL) {
@@ -47,7 +44,6 @@ int tensor_read_pgm(tensor* t, tensor* result) {
         return ERR_OUT_OF_MEMORY;
     }
 
-    // 5. Sequentially read the entire binary block at once (Fastest I/O method)
     if ((int) fread(raw_pixels, sizeof(unsigned char), num_pixels, out_file)  !=  num_pixels) {
         free(raw_pixels);
         fclose(out_file);
@@ -57,7 +53,7 @@ int tensor_read_pgm(tensor* t, tensor* result) {
     fclose(out_file);
 
 
-    int create_res = create_numeric_tensor(result, NULL, height, width);
+    int create_res = tensor_init_numeric(result, NULL, height, width);
     if (create_res != ERR_SUCCESS) {
         free(raw_pixels);
         return create_res;
@@ -84,8 +80,7 @@ int tensor_write_pgm(tensor* string_t, tensor* numeric_t) {
 
     FILE* out_file = fopen(string_t->filename, "wb");
     if (out_file  ==  NULL) {
-        // DEFINIRE ERRORE
-        return -1;
+        return ERR_FILE_OPEN;
     }
 
     fprintf(out_file, "P5\n");
@@ -112,7 +107,6 @@ int tensor_write_pgm(tensor* string_t, tensor* numeric_t) {
             val = 1.0f;
         }
         
-        // "rimappati in [0, 255]"
         pixels[i] = (unsigned char)(val * 255.0f);
     }
 
@@ -132,29 +126,27 @@ int tensor_read_mmap(tensor* t, tensor* result) {
 
     FILE* out_file = fopen(t->filename, "rb");
     if (out_file  ==  NULL) {
-        // DEFINIRE ERRORE
-        return -1;
+        return ERR_FILE_OPEN;
     }
 
     int fd = fileno(out_file);
     if (fd < 0) {
         fclose(out_file);
-        // DEFINIRE ERRORE
-        return -1;
+        return ERR_IO;
     }
 
     struct stat file_stat;
     if (fstat(fd, &file_stat) < 0) {
         close(fd);
         free_tensor(t);
-        return ERR_IO;
+        return ERR_FILE_STAT;
     }
 
     float* mapped_data = mmap(NULL, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (mapped_data  ==  MAP_FAILED) {
         fclose(out_file);
         free_tensor(t);
-        return ERR_IO;
+        return ERR_MMAP_FAILED;
     }
     
     // OPTIMIZE w madvise ?
@@ -175,10 +167,9 @@ int tensor_read_mmap(tensor* t, tensor* result) {
 
     result->values = (float*) ((char*)mapped_data + header->data_offset);
     
-    // Allocate the reference counter (this still uses malloc)
     result->ref_count = (int*) malloc(sizeof(int));
     if (result->ref_count == NULL) {
-        munmap(mapped_data, file_stat.st_size); // Clean up on failure
+        munmap(mapped_data, file_stat.st_size);
         free_tensor(t);
         return ERR_OUT_OF_MEMORY;
     }
@@ -194,13 +185,10 @@ int tensor_write_bin(tensor* string_t, tensor* numeric_t) {
 
     ASSERT_STRING(string_t);
     ASSERT_NUMERIC(numeric_t);
-
-    // int matrix_result = is_matrix(numeric_t);
-    // if (matrix_result != ERR_SUCCESS) return matrix_result;
     
     FILE* out_file = fopen(string_t->filename, "wb");
     if (out_file == NULL) {
-        return ERR_IO; 
+        return ERR_FILE_OPEN; 
     }
 
     on_disk_tensor header;

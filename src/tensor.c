@@ -4,144 +4,217 @@
 // Handles memory allocation, reference counting, and shape operations like r, \, and #.
 
 #include "tensor.h"
-#include "utils.h"
 
-int tensor_reshape(tensor* t, tensor* s) {
+int shape_cmp(tensor* t1, tensor* t2) {
 
-    if ((t  ==  NULL)  ||  (s  ==  NULL)) {
-        return ERR_NULL_PTR;
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
+        return ERR_NULL_PTR; 
     }
 
-    ASSERT_NUMERIC(t);
-    ASSERT_NUMERIC(s);
-
-    int vector_result = is_vector(s);
-    if (vector_result  !=  ERR_SUCCESS) return vector_result;
-
-    int s_len = s->rows * s->columns;
-
-    if ((s_len < 1)  ||  (s_len > 2)) {
-        return ERR_SHAPE_MISMATCH; 
+    if ((t1->rows  ==  t2->rows)  &&  (t1->columns  ==  t2->columns)){
+        return ERR_SUCCESS;
     }
 
-    int new_rows;
-    int new_cols;
+    return ERR_SHAPE_MISMATCH;
 
-    if (s_len == 2) {
-        // shape is 2D Matrix
-        new_rows = (int)s->values[0];
-        new_cols = (int)s->values[1];
-    } else {
-        // shape is 1D Vector 
-        new_rows = 1;
-        new_cols = (int)s->values[0];
-    }
-
-    if ((new_rows <= 0)  ||  (new_cols <= 0)) {
-        return ERR_SHAPE_MISMATCH;
-    }
-
-    int t_shape = t->rows * t->columns;
-    int s_shape = new_rows * new_cols;
-    
-    if (t_shape  !=  s_shape) {
-        return ERR_SHAPE_MISMATCH;
-    }
-
-    t->rows = new_rows;
-    t->columns = new_cols;
-
-    return ERR_SUCCESS;
 }
 
-int tensor_ravel(tensor* t) {
+int shape_cmp_matmul(tensor* t1, tensor* t2) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+
+    if (t1->columns  ==  t2->rows){
+        return ERR_SUCCESS;
+    }
+
+    return ERR_MATMUL_DIM_MISMATCH;
+
+}
+
+int shape_cmp_dot(tensor* t1, tensor* t2) {
+
+    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+
+    int len_t1 = t1->rows * t1->columns;
+    int len_t2 = t2->rows * t2->columns;
+
+    if (len_t1  ==  len_t2) {
+        return ERR_SUCCESS;
+    }
+
+    return ERR_DOT_DIM_MISMATCH; 
+}
+
+int is_boolean(tensor* t) {
+
+    if (t  ==  NULL) return ERR_NULL_PTR; 
+
+    // OPTIMIZE 
+    int s_values = t->rows * t->columns;
+    for (int i = 0; i < s_values; i++) {
+       if ((t->values[i]  !=  0.0)  &&  (t->values[i]  !=  1.0)) return ERR_NOT_BOOLEAN;
+    }
+
+    return ERR_SUCCESS;
+
+}
+
+int is_matrix(tensor* t) {
+    
+    if (t  ==  NULL) return ERR_NULL_PTR;
+
+    if ((t->rows  !=  1)  &&  (t->columns  !=  1)){
+        return ERR_SUCCESS;
+    }
+
+    return ERR_NOT_MATRIX;
+
+}
+
+int is_vector(tensor* t) {
+
+    if (t  ==  NULL) return ERR_NULL_PTR;
+
+    if ((t->rows == 1) || (t->columns == 1)) {
+        return ERR_SUCCESS;
+    }
+
+    return ERR_NOT_VECTOR;
+
+}
+
+int tensor_init_numeric(tensor* t, float* values, int rows, int columns) {
 
     if (t  ==  NULL) {
-        return ERR_NULL_PTR;
+        return ERR_NULL_PTR; 
     }
-
-    ASSERT_NUMERIC(t);
-
-    int t_shape = t->rows * t->columns;
-
-    t->rows = 1;
-    t->columns = t_shape;
-
-    return ERR_SUCCESS;
-}
-
-int tensor_get_shape(tensor* t, tensor* result) {
-
-    if ((t  ==  NULL)  ||  (result  ==  NULL)) {
-        return ERR_NULL_PTR;
-    }
-
-    ASSERT_NUMERIC(t);
-
-    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, 1, 2);
-    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
-        return create_numeric_tensor_result;
-    }
-
-    result->values[0] = t->rows;
-    result->values[1] = t->columns;
-
-    return ERR_SUCCESS;
-}
-
-int tensor_fill(tensor* s, tensor* v, tensor* result) {
-
-    if ((s  ==  NULL)  ||  (v  ==  NULL)  ||  (result  ==  NULL)) {
-        return ERR_NULL_PTR;
-    }
-
-    ASSERT_NUMERIC(s);
-    ASSERT_NUMERIC(v);
-
-    int vector_result = is_vector(s);
-    if (vector_result  !=  ERR_SUCCESS) return vector_result;
-
-    int s_len = s->rows * s->columns;
-
-    if ((s_len < 1)  ||  (s_len > 2)) {
+    
+    if ((rows <= 0)  ||  (columns <= 0)) {
         return ERR_SHAPE_MISMATCH; 
     }
 
-    int new_rows;
-    int new_cols;
+    t->type = TYPE_NUMERIC;
+    t->rows = rows;
+    t->columns = columns;
 
-    if (s_len == 2) {
-        // shape is 2D Matrix
-        new_rows = (int)s->values[0];
-        new_cols = (int)s->values[1];
+    int newly_allocated = 0;
+
+    if (values  ==  NULL) {
+        int s_values = rows * columns;
+        float* temp = (float*) malloc(sizeof(float) * s_values);
+
+        if (temp  ==  NULL) return ERR_OUT_OF_MEMORY;
+
+        t->values = temp;
+        newly_allocated = 1;
+
     } else {
-        // shape is 1D Vector 
-        new_rows = 1;
-        new_cols = (int)s->values[0];
+        t->values = values;
     }
 
-    if ((new_rows <= 0)  ||  (new_cols <= 0)) {
-        return ERR_SHAPE_MISMATCH;
+    t->ref_count = (int*) malloc(sizeof(int));
+    
+    if (t->ref_count  ==  NULL) {
+        if (newly_allocated  ==  1) {
+            free(t->values); 
+        }
+        return ERR_OUT_OF_MEMORY;
     }
 
-    int s_values = result->rows * result->columns;
-    int v_len = v->rows * v->columns;
-
-    if (s_values % v_len != 0)  {
-        return ERR_SHAPE_MISMATCH; 
-    }
-
-    int create_numeric_tensor_result = create_numeric_tensor(result, NULL, new_rows, new_cols);
-    if (create_numeric_tensor_result  !=  ERR_SUCCESS) {
-        return create_numeric_tensor_result;
-    }
-
-    // OPTIMIZE
-    for (int i = 0; i < s_values; i++) {
-        int idx = i % v_len;
-        result->values[i] = v->values[idx];
-    }
+    (*t->ref_count) = 1;
 
     return ERR_SUCCESS;
+}
 
+int tensor_init_string(tensor* t, char* string) {
+    if ((t  ==  NULL)  ||  (string  ==  NULL)) {
+        return ERR_NULL_PTR; 
+    }
+    
+    t->type = TYPE_STRING;
+
+    int str_len = strlen(string);
+    t->filename = (char*) malloc(str_len + 1);
+    
+    if (t->filename == NULL) {
+        return ERR_OUT_OF_MEMORY;
+    }
+    
+    strcpy(t->filename, string);
+
+    t->ref_count = (int*) malloc(sizeof(int));
+    if (t->ref_count  ==  NULL) {
+        return ERR_OUT_OF_MEMORY;
+    }
+
+    (*t->ref_count) = 1;
+
+    return ERR_SUCCESS;
+}
+
+void free_tensor(tensor* t) {
+    if ((t == NULL) || (t->ref_count == NULL)) {
+        return;
+    }
+
+    (*t->ref_count)--;
+
+    if ((*t->ref_count) == 0) {
+        
+        if (t->type == TYPE_NUMERIC) {
+            if (t->values != NULL) {
+                free(t->values);
+            }
+        } 
+        
+        if (t->type == TYPE_NUMERIC_MMAP) {
+            if (t->values != NULL) {
+                // 1. Calculate the exact total size of the file in memory
+                size_t total_size = sizeof(on_disk_tensor) + 
+                                   (t->rows * t->columns * sizeof(float));
+
+                // 2. Step backwards from t->values to find the original mmap pointer
+                void* original_mmap_ptr = (void*)((char*)t->values - sizeof(on_disk_tensor));
+
+                munmap(original_mmap_ptr, total_size);
+            }
+        } 
+        
+        if (t->type == TYPE_STRING) {
+            if (t->filename != NULL) {
+                free(t->filename);
+            }
+        }
+
+        free(t->ref_count);
+    }
+}
+
+void tensor_print(tensor* t) {
+    
+    if (t == NULL) {
+        return;
+    }
+
+    if ((t->type  !=  TYPE_NUMERIC)  &&  (t->type  !=  TYPE_NUMERIC_MMAP)) return;
+
+    // shape: rows columns
+    printf("Tensor(shape=[");
+    printf("%d %d", t->rows, t->columns);
+    
+    printf("], data=[");
+
+    int total_elements = t->rows * t->columns;
+    for (int i = 0; i < total_elements; i++) {
+        printf("%.2f", t->values[i]);
+        if (i < total_elements - 1) {
+            printf(" ");
+        }
+    }
+    
+    printf("])\n");
 }

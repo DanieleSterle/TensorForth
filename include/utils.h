@@ -5,9 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "stack.h"
-#include "tensor.h"
-#include "io.h"
 
 #define ASSERT_NUMERIC(t) \
     if ((t)->type != TYPE_NUMERIC) { \
@@ -21,45 +18,42 @@
 
 typedef enum {
     ERR_SUCCESS = 0,
+
     // Memory & Stack
     ERR_NULL_PTR = -1,
     ERR_OUT_OF_MEMORY = -2,
     ERR_STACK_UNDERFLOW = -3,
     ERR_STACK_OVERFLOW = -4,
+
     // Math & Logic Operations
     ERR_SHAPE_MISMATCH = -5,
     ERR_NOT_BOOLEAN = -6,
     ERR_NOT_MATRIX = -7,
-    ERR_NOT_VECTOR = -18,
     ERR_DOT_DIM_MISMATCH = -8,
     ERR_MATMUL_DIM_MISMATCH = -9,
-    // I/O and Files
-    ERR_MISSING_ARGUMENT = -10,
-    ERR_FILE_OPEN = -11,
-    ERR_UNEXPECTED_EOF = -12,
-    // Syntax and Parsing
-    ERR_SYNTAX = -13,
-    ERR_INVALID_CHAR = -14,
-    ERR_BUFFER_OVERFLOW = -15,
-    ERR_EMPTY_TENSOR = -16,
-    ERR_INVALID_NUMBER = -17,
+    ERR_NOT_VECTOR = -10,
+    ERR_EXPECTED_NUMERIC = -11,
+    ERR_EXPECTED_STRING = -12,
 
-    ERR_EXPECTED_NUMERIC = -20,
-    ERR_EXPECTED_STRING = -21,
-    ERR_IO = -29
+    // I/O and Files
+    ERR_MISSING_ARGUMENT = -13,
+    ERR_FILE_OPEN = -14,
+    ERR_UNEXPECTED_EOF = -15,
+    ERR_FILE_READ = -16,      
+    ERR_FILE_WRITE = -17,     
+    ERR_INVALID_PGM = -18,    
+    ERR_FILE_STAT = -19,      
+    ERR_MMAP_FAILED = -20,    
+    ERR_IO = -21,             
+
+    // Syntax and Parsing
+    ERR_SYNTAX = -22,
+    ERR_INVALID_CHAR = -23,
+    ERR_BUFFER_OVERFLOW = -24,
+    ERR_EMPTY_TENSOR = -25,
+    ERR_INVALID_NUMBER = -26
 } error_code;
 
-void free_tensor(tensor* t);
-void free_all(FILE* fd, tensor* stack, int s_stack, float* values);
-int shape_cmp(tensor* t1, tensor* t2);
-int shape_cmp_matmul(tensor* t1, tensor* t2);
-int shape_cmp_dot(tensor* t1, tensor* t2);
-int is_boolean(tensor* t);
-int is_matrix(tensor* t);
-int is_vector(tensor* t);
-
-void tensor_print(tensor* t);
-int tensor_generate_random(tensor* s, tensor* result);
 void print_error(int error_code);
 
 #endif
