@@ -82,7 +82,7 @@ int parse_inline_tensor(FILE* file, tensor** stack, int* s_size, int* s_head, in
                 // If b_idx > 0, we just finished reading a float
                 buffer[b_idx] = '\0';
                 char* endptr;
-                float curr_float = (float)strtod(buffer, &endptr);
+                float curr_float = (float) strtod(buffer, &endptr);
 
                 // Check for invalid number formats (e.g., multiple dots)
                 if (*endptr != '\0') {

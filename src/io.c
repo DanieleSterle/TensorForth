@@ -90,7 +90,6 @@ int tensor_read_pgm(tensor* t, tensor* result) {
     
     fclose(out_file);
 
-
     int create_res = tensor_init_numeric(result, NULL, height, width);
     if (create_res != ERR_SUCCESS) {
         free(raw_pixels);
@@ -122,10 +121,10 @@ int tensor_write_pgm(tensor* string_t, tensor* numeric_t) {
     }
 
     fprintf(out_file, "P5\n");
-    fprintf(out_file, "%d %d\n", numeric_t->columns, numeric_t->rows);
+    fprintf(out_file, "%d %d\n", numeric_t->shape[1], numeric_t->shape[0]);
     fprintf(out_file, "255\n");
 
-    int num_pixels = numeric_t->rows * numeric_t->columns;
+    int num_pixels = numeric_t->shape[0] * numeric_t->shape[1];
     unsigned char* pixels = (unsigned char*) malloc(num_pixels * sizeof(unsigned char));
     
     if (pixels == NULL) {
@@ -194,13 +193,14 @@ int tensor_read_mmap(tensor* t, tensor* result) {
     on_disk_tensor* header = (on_disk_tensor*) mapped_data;
 
     result->type = TYPE_NUMERIC_MMAP;
+    result->ndim = header->ndim;
     
     if (header->ndim == 1) {
-        result->rows = 1;
-        result->columns = header->shape[0];
+        result->shape[0] = header->shape[0];
+        result->shape[1] = 0;
     } else {
-        result->rows = header->shape[0];
-        result->columns = header->shape[1];
+        result->shape[0] = header->shape[0];
+        result->shape[1] = header->shape[1];
     }
 
     result->values = (float*) ((char*)mapped_data + header->data_offset);
@@ -230,16 +230,17 @@ int tensor_write_bin(tensor* string_t, tensor* numeric_t) {
     }
 
     on_disk_tensor header;
-    if (numeric_t->rows == 1) {
+    if (numeric_t->ndim == 1) {
         header.ndim = 1;
-        header.shape[0] = numeric_t->columns;
+        header.shape[0] = numeric_t->shape[0];
         header.shape[1] = 0;
     } else {
         header.ndim = 2;
-        header.shape[0] = numeric_t->rows;
-        header.shape[1] = numeric_t->columns;
+        header.shape[0] = numeric_t->shape[0];
+        header.shape[1] = numeric_t->shape[1];
     }
-    header.data_offset = sizeof(on_disk_tensor);
+
+    header.data_offset = 64;
 
     size_t written_header = fwrite(&header, sizeof(on_disk_tensor), 1, out_file);
     if (written_header != 1) {
@@ -247,7 +248,17 @@ int tensor_write_bin(tensor* string_t, tensor* numeric_t) {
         return ERR_IO;
     }
 
-    int num_elements = numeric_t->rows * numeric_t->columns;
+    int padding_size = 64 - sizeof(on_disk_tensor);
+    if (padding_size > 0) {
+        char padding[64] = {0}; // Array of zeros
+        fwrite(padding, sizeof(char), padding_size, out_file);
+    }
+    
+    int num_elements = numeric_t->shape[0];
+    if (numeric_t->ndim == 2) {
+        num_elements *= numeric_t->shape[1];
+    }
+
     size_t written_data = fwrite(numeric_t->values, sizeof(float), num_elements, out_file);
     
     if ((int) written_data != num_elements) {

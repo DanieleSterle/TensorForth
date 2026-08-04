@@ -25,8 +25,10 @@ typedef struct {
         
         struct {            
             float* values;
-            int rows;
-            int columns;
+            // e.g., shape[0] for 1D; shape[0] (rows), shape[1] (cols) for 2D
+            int32_t shape[MAX_DIM];
+            // 1 for vector, 2 for matrix
+            int32_t ndim;
         };                  
         
         char* filename;
