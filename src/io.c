@@ -5,6 +5,32 @@
 
 #include "io.h"
 
+// Skips whitespaces and any comment lines starting with '#'
+static void skip_pgm_comments(FILE *fp) {
+    int ch;
+    while (1) {
+        // Skip leading whitespaces
+        do {
+            ch = fgetc(fp);
+        } while (isspace(ch));
+
+        if (ch == EOF) {
+            break;
+        }
+
+        // If a comment is found, skip characters until the end of the line
+        if (ch == '#') {
+            do {
+                ch = fgetc(fp);
+            } while (ch != '\n' && ch != EOF);
+        } else {
+            // Not a comment and not a space, put the character back for fscanf
+            ungetc(ch, fp);
+            break;
+        }
+    }
+}
+
 int tensor_read_pgm(tensor* t, tensor* result) {
     if ((t  ==  NULL)  ||  (result  ==  NULL)) {
         return ERR_NULL_PTR;
@@ -26,10 +52,22 @@ int tensor_read_pgm(tensor* t, tensor* result) {
         return ERR_INVALID_PGM;
     }
 
-    // (Note: A truly robust PGM parser skips comment lines starting with '#' here)
-    
-    // Read dimensions and max value
-    if (fscanf(out_file, "%d %d %d", &width, &height, &maxval)  !=  3) {
+    skip_pgm_comments(out_file);
+    if (fscanf(out_file, "%d", &width) != 1) {
+        fclose(out_file);
+        return ERR_IO;
+    }
+
+    // Skip comments/whitespace before height
+    skip_pgm_comments(out_file);
+    if (fscanf(out_file, "%d", &height) != 1) {
+        fclose(out_file);
+        return ERR_IO;
+    }
+
+    // Skip comments/whitespace before maxval
+    skip_pgm_comments(out_file);
+    if (fscanf(out_file, "%d", &maxval) != 1) {
         fclose(out_file);
         return ERR_IO;
     }
