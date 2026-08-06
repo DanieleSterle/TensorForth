@@ -24,14 +24,16 @@ int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
     int matmul_shape_result = shape_cmp_matmul(t1, t2);
     if (matmul_shape_result != ERR_SUCCESS) return matmul_shape_result;
 
-    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, t1->shape[0], t2->shape[1]);
+    int shape[] = {t1->shape[0], t2->shape[1]};
+
+    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_MATRIX);
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
     
-    result->ndim = 2;
-    result->shape[0] = t1->shape[0];
-    result->shape[1] = t2->shape[1];
+    // result->ndim = 2;
+    // result->shape[0] = t1->shape[0];
+    // result->shape[1] = t2->shape[1];
 
     // OPTIMIZE WITH OPENMP & INDEXES
     // t2 should be in COLUMN MAJOR ?
@@ -61,17 +63,25 @@ int tensor_dot(tensor* t1, tensor* t2, tensor* result) {
     ASSERT_NUMERIC(t1);
     ASSERT_NUMERIC(t2);
 
-    int shape_result = shape_cmp_dot(t1, t2);
+    int vector_result;
+    vector_result = is_vector(t1);
+    if (vector_result != ERR_SUCCESS) return vector_result;
+
+    vector_result = is_vector(t2);
+    if (vector_result != ERR_SUCCESS) return vector_result;
+
+    int shape_result = shape_cmp(t1, t2);
     if (shape_result != ERR_SUCCESS) return shape_result;
 
-    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, 1, 0);
+    int shape[] = {1};
+    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_VECTOR);
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
     
-    result->ndim = 1;
-    result->shape[0] = 1;
-    result->shape[1] = 0;
+    // result->ndim = 1;
+    // result->shape[0] = 1;
+    // result->shape[1] = 0;
 
     // OPTIMIZE WITH OPENMP  
     float sum = 0.0f;
@@ -102,14 +112,15 @@ int tensor_conv2d(tensor* t, tensor* k, tensor* result) {
     matrix_result = is_matrix(k);
     if (matrix_result != ERR_SUCCESS) return matrix_result;
 
-    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, t->shape[0], t->shape[1]);
+    int shape[] = {t->shape[0], t->shape[1]};
+    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_MATRIX);
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
 
-    result->ndim = 2;
-    result->shape[0] = t->shape[0];
-    result->shape[1] = t->shape[1];
+    // result->ndim = 2;
+    // result->shape[0] = t->shape[0];
+    // result->shape[1] = t->shape[1];
 
     int offset_row = k->shape[0] / 2;
     int offset_col = k->shape[1] / 2;
@@ -178,16 +189,6 @@ int tensor_reshape(tensor* t, tensor* s) {
         new_ndim = 1;
     }
 
-    if (new_shape0 <= 0) {
-        return ERR_SHAPE_MISMATCH;
-    }
-    
-    if (new_ndim == 2) {
-        if (new_shape1 <= 0) {
-            return ERR_SHAPE_MISMATCH;
-        }
-    }
-
     int t_shape;
     if (t->ndim == 1) {
         t_shape = t->shape[0];
@@ -246,9 +247,11 @@ int tensor_get_shape(tensor* t, tensor* result) {
     int tensor_init_numeric_result;
     
     if (t->ndim == 1) {
-        tensor_init_numeric_result = tensor_init_numeric(result, NULL, 1, 0);
+        int shape[] = {1};
+        tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_VECTOR);
     } else {
-        tensor_init_numeric_result = tensor_init_numeric(result, NULL, 2, 0);
+        int shape[] = {2};
+        tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_VECTOR);
     }
     
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
@@ -315,14 +318,18 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
         }
     }
 
-    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, new_shape0, new_shape1);
+    int tensor_shape;
+    if (new_ndim == 1) {
+        tensor_shape = TENSOR_SHAPE_VECTOR;
+    } else {
+        tensor_shape = TENSOR_SHAPE_MATRIX;
+    }
+
+    int shape[] = {new_shape0, new_shape1};
+    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, tensor_shape);
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
-    
-    result->ndim = new_ndim;
-    result->shape[0] = new_shape0;
-    result->shape[1] = new_shape1;
 
     int s_values;
     if (result->ndim == 1) {
@@ -349,7 +356,6 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
     }
 
     return ERR_SUCCESS;
-
 }
 
 int tensor_generate_random(tensor* s, tensor* result) {
@@ -392,27 +398,34 @@ int tensor_generate_random(tensor* s, tensor* result) {
         }
     }
 
-    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, new_shape0, new_shape1);
+    int tensor_shape;
+    if (new_ndim == 1) {
+        tensor_shape = TENSOR_SHAPE_VECTOR;
+    } else {
+        tensor_shape = TENSOR_SHAPE_MATRIX;
+    }
+
+    int shape[] = {new_shape0, new_shape1};
+    int tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, tensor_shape);
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
-    
-    result->ndim = new_ndim;
-    result->shape[0] = new_shape0;
-    result->shape[1] = new_shape1;
 
-    int size;
-    if (new_ndim == 1) {
-        size = new_shape0;
+    int s_values;
+    if (result->ndim == 1) {
+        s_values = result->shape[0];
     } else {
-        size = new_shape0 * new_shape1;
+        s_values = result->shape[0] * result->shape[1];
     }
+    
+    // result->ndim = new_ndim;
+    // result->shape[0] = new_shape0;
+    // result->shape[1] = new_shape1;
 
     // NON OTTIMIZZARE
-    for (int i = 0; i < size; i++){
+    for (int i = 0; i < s_values; i++){
         result->values[i] = (float)rand() / (float)RAND_MAX;
     }
 
     return ERR_SUCCESS;
-
 }

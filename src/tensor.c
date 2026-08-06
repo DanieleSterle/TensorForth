@@ -41,33 +41,6 @@ int shape_cmp_matmul(tensor* t1, tensor* t2) {
 
 }
 
-int shape_cmp_dot(tensor* t1, tensor* t2) {
-
-    if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
-        return ERR_NULL_PTR; 
-    }
-
-    int len_t1;
-    if (t1->ndim == 1) {
-        len_t1 = t1->shape[0];
-    } else {
-        len_t1 = t1->shape[0] * t1->shape[1];
-    }
-    
-    int len_t2;
-    if (t2->ndim == 1) {
-        len_t2 = t2->shape[0];
-    } else {
-        len_t2 = t2->shape[0] * t2->shape[1];
-    }
-
-    if (len_t1  ==  len_t2) {
-        return ERR_SUCCESS;
-    }
-
-    return ERR_DOT_DIM_MISMATCH; 
-}
-
 int is_boolean(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR; 
@@ -112,33 +85,39 @@ int is_vector(tensor* t) {
 
 }
 
-int tensor_init_numeric(tensor* t, float* values, int rows, int columns) {
+int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) {
 
     if (t  ==  NULL) {
         return ERR_NULL_PTR; 
     }
     
-    if (rows <= 0) {
-        return ERR_SHAPE_MISMATCH; 
+    if (shape == NULL) {
+        return ERR_NULL_PTR;
     }
     
-    if (columns < 0) {
-        return ERR_SHAPE_MISMATCH; 
-    }
-
     t->type = TYPE_NUMERIC;
+    int s_values = 0;
     
-    int s_values;
-    if (columns == 0) {
+    // Check shapes based on the tensor type to avoid out-of-bounds reading
+    if (tensor_shape == TENSOR_SHAPE_VECTOR) {
+        if (shape[0] <= 0) return ERR_SHAPE_MISMATCH;
+        
         t->ndim = 1;
-        t->shape[0] = rows;
+        t->shape[0] = shape[0];
         t->shape[1] = 0;
-        s_values = rows;
-    } else {
+        s_values = shape[0];
+        
+    } else if (tensor_shape == TENSOR_SHAPE_MATRIX) {
+        if (shape[0] <= 0 || shape[1] <= 0) return ERR_SHAPE_MISMATCH;
+        
         t->ndim = 2;
-        t->shape[0] = rows;
-        t->shape[1] = columns;
-        s_values = rows * columns;
+        t->shape[0] = shape[0];
+        t->shape[1] = shape[1];
+        s_values = shape[0] * shape[1];
+        
+    } else {
+        // Catch invalid tensor_shape arguments
+        return ERR_SHAPE_MISMATCH; 
     }
 
     int newly_allocated = 0;

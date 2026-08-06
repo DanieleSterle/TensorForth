@@ -17,6 +17,11 @@ typedef enum {
     TYPE_STRING
 } tensor_type;
 
+typedef enum {
+    TENSOR_SHAPE_VECTOR,
+    TENSOR_SHAPE_MATRIX
+} tensor_shape;
+
 typedef struct {
     // The tag to check what data is active
     tensor_type type;
@@ -45,12 +50,11 @@ typedef struct {
 
 int shape_cmp(tensor* t1, tensor* t2);
 int shape_cmp_matmul(tensor* t1, tensor* t2);
-int shape_cmp_dot(tensor* t1, tensor* t2);
 int is_boolean(tensor* t);
 int is_matrix(tensor* t);
 int is_vector(tensor* t);
 
-int tensor_init_numeric(tensor* t, float* values, int rows, int columns);
+int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape);
 int tensor_init_string(tensor* t, char* string);
 void free_tensor(tensor* t);
 

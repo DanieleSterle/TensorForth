@@ -1,4 +1,8 @@
 .vscode/
 examples/
 tests/
+tensorforth_tests/
 build/
+tensorforth
+result.txt
+result_valgrind.txt

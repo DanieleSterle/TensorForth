@@ -12,7 +12,7 @@
 #include "utils.h"
 #include "tensor.h"
 
-static void skip_pgm_comments(FILE *fp);
+void skip_pgm_comments(FILE *fp);
 
 int tensor_read_pgm(tensor* t, tensor* result);
 int tensor_write_pgm(tensor* string_t, tensor* numeric_t);

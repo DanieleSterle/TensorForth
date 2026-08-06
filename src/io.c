@@ -6,7 +6,7 @@
 #include "io.h"
 
 // Skips whitespaces and any comment lines starting with '#'
-static void skip_pgm_comments(FILE *fp) {
+void skip_pgm_comments(FILE *fp) {
     int ch;
     while (1) {
         // Skip leading whitespaces
@@ -90,7 +90,9 @@ int tensor_read_pgm(tensor* t, tensor* result) {
     
     fclose(out_file);
 
-    int create_res = tensor_init_numeric(result, NULL, height, width);
+    int shape[] = {height, width};
+
+    int create_res = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_MATRIX);
     if (create_res != ERR_SUCCESS) {
         free(raw_pixels);
         return create_res;
@@ -101,6 +103,7 @@ int tensor_read_pgm(tensor* t, tensor* result) {
         result->values[i] = (float)raw_pixels[i] / 255.0f;
     }
 
+    free(raw_pixels);
     return ERR_SUCCESS;
 }
 
@@ -229,7 +232,8 @@ int tensor_write_bin(tensor* string_t, tensor* numeric_t) {
         return ERR_FILE_OPEN; 
     }
 
-    on_disk_tensor header;
+    on_disk_tensor header = {0};
+
     if (numeric_t->ndim == 1) {
         header.ndim = 1;
         header.shape[0] = numeric_t->shape[0];

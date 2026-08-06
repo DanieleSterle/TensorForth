@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 #define ASSERT_NUMERIC(t) \
-    if ((t)->type != TYPE_NUMERIC) { \
+    if (((t)->type != TYPE_NUMERIC) && ((t)->type != TYPE_NUMERIC_MMAP)) { \
         return ERR_EXPECTED_NUMERIC; \
     }
 

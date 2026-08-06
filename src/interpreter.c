@@ -150,9 +150,12 @@ int parse_inline_tensor(FILE* file, tensor** stack, int* s_size, int* s_head, in
     }
     values = temp;
 
+    // CONTROLLARE
+    int shape[] = {v_size};
+
     // Initialize and push to stack
     tensor new_tensor;
-    int tensor_init_numeric_result = tensor_init_numeric(&new_tensor, values, 1, v_size);
+    int tensor_init_numeric_result = tensor_init_numeric(&new_tensor, values, shape, TENSOR_SHAPE_VECTOR);
     if (tensor_init_numeric_result != ERR_SUCCESS) {
         free(values);
         return tensor_init_numeric_result;
