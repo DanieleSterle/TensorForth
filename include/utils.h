@@ -3,9 +3,11 @@
 #ifndef TENSORFORTH_UTILS_H
 #define TENSORFORTH_UTILS_H
 
+#include "common.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 
 #define ASSERT_NUMERIC(t) \
     if (((t)->type != TYPE_NUMERIC) && ((t)->type != TYPE_NUMERIC_MMAP)) { \

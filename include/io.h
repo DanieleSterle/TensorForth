@@ -2,13 +2,15 @@
 
 #ifndef TENSORFORTH_IO_H
 #define TENSORFORTH_IO_H
-#define _DEFAULT_SOURCE
+
+#include "common.h"
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include "utils.h"
 #include "tensor.h"
 
