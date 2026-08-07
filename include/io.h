@@ -2,7 +2,7 @@
 
 #ifndef TENSORFORTH_IO_H
 #define TENSORFORTH_IO_H
-
+#define _DEFAULT_SOURCE
 #include <fcntl.h>
 #include <stdio.h>
 #include <ctype.h>

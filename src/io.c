@@ -98,7 +98,7 @@ int tensor_read_pgm(tensor* t, tensor* result) {
         return create_res;
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < num_pixels; i++) {
         result->values[i] = (float)raw_pixels[i] / 255.0f;
     }
@@ -135,18 +135,10 @@ int tensor_write_pgm(tensor* string_t, tensor* numeric_t) {
         return ERR_OUT_OF_MEMORY;
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < num_pixels; i++) {
-        float val = numeric_t->values[i];
-        
-        if (val < 0.0f) {
-            val = 0.0f;
-        } 
-
-        else if (val > 1.0f) {
-            val = 1.0f;
-        }
-        
+        float val = numeric_t->values[i];        
+        val = fminf(fmaxf(val, 0.0f), 1.0f);
         pixels[i] = (unsigned char)(val * 255.0f);
     }
 
@@ -188,9 +180,9 @@ int tensor_read_mmap(tensor* t, tensor* result) {
         free_tensor(t);
         return ERR_MMAP_FAILED;
     }
-    
-    // OPTIMIZE w madvise ?
 
+    madvise(mapped_data, file_stat.st_size, MADV_WILLNEED);
+    
     fclose(out_file);
 
     on_disk_tensor* header = (on_disk_tensor*) mapped_data;

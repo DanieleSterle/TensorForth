@@ -30,24 +30,27 @@ int tensor_matmul(tensor* t1, tensor* t2, tensor* result) {
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
-    
-    // result->ndim = 2;
-    // result->shape[0] = t1->shape[0];
-    // result->shape[1] = t2->shape[1];
 
-    // OPTIMIZE WITH OPENMP & INDEXES
-    // t2 should be in COLUMN MAJOR ?
+    // 1. Initialize result to 0 (Required for i-k-j order)
+    int res_elements = result->shape[0] * result->shape[1];
+    #pragma omp parallel for
+    for (int i = 0; i < res_elements; i++) {
+        result->values[i] = 0.0f;
+    }
+
+    // 2. Compute using i-k-j order
+    // Note: We cannot use collapse(2) here because i and j are no longer adjacent.
+    #pragma omp parallel for
     for (int i = 0; i < result->shape[0]; i++){
-        for (int j = 0; j < result->shape[1]; j++){
-            float sum = 0.0f;
+        for (int k = 0; k < t1->shape[1]; k++) {
             
-            for (int k = 0; k < t1->shape[1]; k++) {
-                // t1 index: row i, column k
-                // t2 index: row k, column j
-                sum += t1->values[i * t1->shape[1] + k] * t2->values[k * t2->shape[1] + j];
+            // This value is constant for the entire j loop
+            float t1_val = t1->values[i * t1->shape[1] + k];
+            
+            for (int j = 0; j < result->shape[1]; j++){
+                // Innermost loop uses + j, which means perfect sequential memory access!
+                result->values[i * result->shape[1] + j] += t1_val * t2->values[k * t2->shape[1] + j];
             }
-            
-            result->values[i * result->shape[1] + j] = sum;
         }
     }
 
@@ -78,15 +81,11 @@ int tensor_dot(tensor* t1, tensor* t2, tensor* result) {
     if (tensor_init_numeric_result  !=  ERR_SUCCESS) {
         return tensor_init_numeric_result;
     }
-    
-    // result->ndim = 1;
-    // result->shape[0] = 1;
-    // result->shape[1] = 0;
 
-    // OPTIMIZE WITH OPENMP  
     float sum = 0.0f;
     int vector_length = t1->shape[0]; 
     
+    #pragma omp parallel for reduction(+:sum)
     for (int k = 0; k < vector_length; k++) {
         sum += t1->values[k] * t2->values[k];
     }
@@ -118,33 +117,41 @@ int tensor_conv2d(tensor* t, tensor* k, tensor* result) {
         return tensor_init_numeric_result;
     }
 
-    // result->ndim = 2;
-    // result->shape[0] = t->shape[0];
-    // result->shape[1] = t->shape[1];
-
     int offset_row = k->shape[0] / 2;
     int offset_col = k->shape[1] / 2;
 
-    // OPTIMIZE WITH OPENMP e memoria
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < result->shape[0]; i++) {
         for (int j = 0; j < result->shape[1]; j++) {
             
             float sum = 0.0f;
 
-            for (int x = 0; x < k->shape[0]; x++) {
-                for (int y = 0; y < k->shape[1]; y++) {
-                    
-                    int curr_idx_row = i + x - offset_row;
-                    int curr_idx_column = j + y - offset_col;
+            // 1. Compute valid kernel bounds for the current pixel (i, j).
+            // This mathematically crops the kernel at the image edges, completely 
+            // eliminating the need for expensive "if" statements inside the inner loops.
+            int start_x = (offset_row > i) ? (offset_row - i) : 0;
+            int max_x   = t->shape[0] - i + offset_row;
+            int end_x   = (k->shape[0] < max_x) ? k->shape[0] : max_x;
 
-                    if ((curr_idx_row >= 0)  &&  (curr_idx_column >= 0)  &&
-                        (curr_idx_row < t->shape[0])  &&  (curr_idx_column < t->shape[1])){
-                        
-                        int t_index = curr_idx_row * t->shape[1] + curr_idx_column;
-                        int k_index = x * k->shape[1] + y;
-                        
-                        sum += t->values[t_index] * k->values[k_index];
-                    }
+            int start_y = (offset_col > j) ? (offset_col - j) : 0;
+            int max_y   = t->shape[1] - j + offset_col;
+            int end_y   = (k->shape[1] < max_y) ? k->shape[1] : max_y;
+
+            for (int x = start_x; x < end_x; x++) {
+                
+                int curr_idx_row = i + x - offset_row;
+                
+                // 2. Hoist invariant index math out of the innermost loop.
+                // Pre-calculating the 1D base array offsets here prevents the CPU 
+                // from doing redundant multiplication on every single 'y' iteration.
+                int t_base_idx = curr_idx_row * t->shape[1] + j - offset_col;
+                int k_base_idx = x * k->shape[1];
+
+                // 3. Branchless multiply-accumulate over the valid row segment.
+                // Because there are no 'if' checks, the compiler can safely translate 
+                // this pure math into high-speed SIMD vector instructions (AVX).
+                for (int y = start_y; y < end_y; y++) {
+                    sum += t->values[t_base_idx + y] * k->values[k_base_idx + y];
                 }
             }
             
@@ -349,7 +356,7 @@ int tensor_fill(tensor* s, tensor* v, tensor* result) {
         return ERR_SHAPE_MISMATCH; 
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         int idx = i % v_len;
         result->values[i] = v->values[idx];
@@ -417,14 +424,22 @@ int tensor_generate_random(tensor* s, tensor* result) {
     } else {
         s_values = result->shape[0] * result->shape[1];
     }
-    
-    // result->ndim = new_ndim;
-    // result->shape[0] = new_shape0;
-    // result->shape[1] = new_shape1;
 
-    // NON OTTIMIZZARE
-    for (int i = 0; i < s_values; i++){
-        result->values[i] = (float)rand() / (float)RAND_MAX;
+    // 1. Pre-calculate the division
+    float scale = 1.0f / (float)RAND_MAX;
+    
+    // Grab a seed from the global generator before going parallel
+    unsigned int base_seed = rand(); 
+
+    #pragma omp parallel 
+    {
+        // Add the thread ID so each thread gets a unique starting point
+        unsigned int seed = base_seed + omp_get_thread_num(); 
+
+        #pragma omp for
+        for (int i = 0; i < s_values; i++){
+            result->values[i] = (float)rand_r(&seed) * scale;
+        }
     }
 
     return ERR_SUCCESS;

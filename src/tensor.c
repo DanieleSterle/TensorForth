@@ -52,9 +52,19 @@ int is_boolean(tensor* t) {
         s_values = t->shape[0] * t->shape[1];
     }
     
-    // OPTIMIZE 
+    int is_valid = 1;
+
+    #pragma omp parallel for reduction(&&:is_valid)
     for (int i = 0; i < s_values; i++) {
-       if ((t->values[i]  !=  0.0)  &&  (t->values[i]  !=  1.0)) return ERR_NOT_BOOLEAN;
+        // If an invalid value is found, set flag to 0
+        if ((t->values[i]  !=  0.0)  &&  (t->values[i]  !=  1.0)) {
+            is_valid = 0;
+        }
+    }
+
+    // Check the combined flag after the parallel region
+    if (!is_valid) {
+        return ERR_NOT_BOOLEAN;
     }
 
     return ERR_SUCCESS;

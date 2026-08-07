@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define ASSERT_NUMERIC(t) \
     if (((t)->type != TYPE_NUMERIC) && ((t)->type != TYPE_NUMERIC_MMAP)) { \

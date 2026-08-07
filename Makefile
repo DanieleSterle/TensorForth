@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -I ./include -fopenmp
+CFLAGS = -Wall -Wextra -g -I ./include -fopenmp -O3
 LDFLAGS = -fopenmp
 
 SRC_DIR = src

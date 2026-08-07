@@ -37,7 +37,7 @@ int tensor_add(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] + t2->values[i];
     }
@@ -78,7 +78,7 @@ int tensor_subtract(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] - t2->values[i];
     }
@@ -119,7 +119,7 @@ int tensor_multiply(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = t1->values[i] * t2->values[i];
     }
@@ -160,7 +160,7 @@ int tensor_lt(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] < t2->values[i]);
     }
@@ -201,7 +201,7 @@ int tensor_gt(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] > t2->values[i]);
     }
@@ -242,7 +242,7 @@ int tensor_eq(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (t1->values[i] == t2->values[i]);
     }
@@ -290,7 +290,7 @@ int tensor_and(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(t1->values[i] && t2->values[i]);
     }
@@ -338,7 +338,7 @@ int tensor_or(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(t1->values[i] || t2->values[i]);
     }
@@ -378,7 +378,7 @@ int tensor_not(tensor* t, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = (float)(!t->values[i]);
     }
@@ -426,7 +426,7 @@ int tensor_select(tensor* t1, tensor* t2, tensor* mask, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
         result->values[i] = mask->values[i] * t1->values[i] + (1 - mask->values[i]) * t2->values[i];
     }
@@ -463,14 +463,9 @@ int tensor_relu(tensor* t, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
-    // OPTIMIZE
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
-        // Barnchless?
-        if (t->values[i] > 0.0f) {
-            result->values[i] = t->values[i];
-        } else {
-            result->values[i] = 0.0f;
-        }
+        result->values[i] = fmaxf(t->values[i], 0.0f);
     }
 
     return ERR_SUCCESS;
@@ -509,13 +504,9 @@ int tensor_element_min(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
-        // Branchless?
-        if (t1->values[i] < t2->values[i]) {
-            result->values[i] = t1->values[i];
-        } else {
-            result->values[i] = t2->values[i];
-        }
+        result->values[i] = fminf(t1->values[i], t2->values[i]);
     }
 
     return ERR_SUCCESS;
@@ -554,13 +545,9 @@ int tensor_element_max(tensor* t1, tensor* t2, tensor* result) {
         s_values = result->shape[0] * result->shape[1];
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < s_values; i++) {
-        // Branchless?
-        if (t1->values[i] > t2->values[i]) {
-            result->values[i] = t1->values[i];
-        } else {
-            result->values[i] = t2->values[i];
-        }
+        result->values[i] = fmaxf(t1->values[i], t2->values[i]);
     }
 
     return ERR_SUCCESS;
@@ -576,7 +563,7 @@ int tensor_sum_reduce(tensor* t, tensor* result) {
     ASSERT_NUMERIC(t);
 
     int tensor_init_numeric_result;
-    if (t->ndim == 1) { // Retaining t->ndim here to avoid iteration size bugs for reduce
+    if (t->ndim == 1) {
         int shape[] = {1};
         tensor_init_numeric_result = tensor_init_numeric(result, NULL, shape, TENSOR_SHAPE_VECTOR);
     } else {
@@ -592,16 +579,17 @@ int tensor_sum_reduce(tensor* t, tensor* result) {
     if (t->ndim == 1) { // Retaining t->ndim here to avoid iteration size bugs for reduce
         s_values = t->shape[0];
     } else {
-        // NON SERVE
         s_values = t->shape[0] * t->shape[1];
     }
     
-    result->values[0] = 0;
+    float sum = 0;
 
-    // OPTIMIZE 
+    #pragma omp parallel for reduction(+:sum)
     for (int i = 0; i < s_values; i++) {
-        result->values[0] += t->values[i];
+        sum += t->values[i];
     }
+
+    result->values[0] = sum;
 
     return ERR_SUCCESS;
 
