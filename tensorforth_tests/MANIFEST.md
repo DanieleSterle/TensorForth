@@ -1,4 +1,25 @@
-# TensorForth — Suite di 100 test
+# TensorForth — Suite di test
+
+> **ERRATA (aggiornata dopo verifica sui risultati reali):** tre voci di
+> questa suite avevano un'etichetta attesa ERRATA per un mio errore di
+> progettazione, non per un bug dell'interprete testato. Sono state
+> corrette in tabella e segnalate con "CORRETTO (etichetta originale
+> errata)":
+> - **test_038 / test_142** (`matmul_incompatible_dims` /
+>   `matmul_dim_incompatible_after_reshape`): avevo letto le dimensioni
+>   del prodotto di matrici nell'ordine sbagliato. Sotto la convenzione
+>   di stack `(b a -- a@b)` (confermata sperimentalmente), lo script
+>   in questione e' in realta' matematicamente VALIDO, non un caso di
+>   errore.
+> - **test_140** (`over_ok_then_stack_underflow`): avevo sbagliato a
+>   contare gli elementi prodotti da `over`, che ha effetto
+>   `(b a -- b a b)` e quindi AGGIUNGE un elemento allo stack invece di
+>   limitarsi a riordinare quelli esistenti. Tre `p` consecutive dopo un
+>   solo `o` su 2 elementi hanno tutte successo, nessun underflow.
+>
+> Verificato su un run completo dei test 1-275: **nessun altro
+> mismatch** tra comportamento atteso e comportamento osservato.
+
 Ogni riga descrive un file `.tf` nella cartella `tests/`: cosa testa, e cosa vi aspettate che faccia il vostro interprete.
 
 Legenda:
@@ -45,7 +66,7 @@ Legenda:
 | 35 | Selezione | `test_035_select_mask_not_binary.tf` | Maschera con valori non binari (0.5): comportamento non definito dal testo. | EDGE: comportamento non definito dal testo del progetto; verificate solo che non causi crash |
 | 36 | Selezione | `test_036_select_insufficient_stack.tf` | Selezione a cui manca l'operando maschera sullo stack. | ERROR: stack con elementi insufficienti |
 | 37 | Tensori specifiche | `test_037_matmul_correct.tf` | Prodotto di matrici tra una 2x3 e una 3x2 (dimensioni compatibili). | OK: risultato e' una matrice 2x2 |
-| 38 | Tensori specifiche | `test_038_matmul_incompatible_dims.tf` | Prodotto di matrici tra una 2x3 e una 2x2 (dimensioni interne incompatibili). | ERROR: dimensioni incompatibili per il prodotto di matrici |
+| 38 | Tensori specifiche | `test_038_matmul_incompatible_dims.tf` | Prodotto di matrici tra una 2x3 e una 2x2 (dimensioni interne incompatibili). | CORRETTO (etichetta originale errata): sotto la convenzione (b a -- a@b), qui a=[2x2] e b=[2x3], quindi a@b=(2x2)@(2x3) e' dimensionalmente VALIDO (inner dim 2==2), risultato 2x3 = [[9,12,15],[19,26,33]]. Non e' un caso di errore. |
 | 39 | Tensori specifiche | `test_039_matmul_1d_operands_error.tf` | Prodotto di matrici applicato a due vettori 1D (devono essere 2D). | ERROR: gli operandi di @ devono essere tensori 2D |
 | 40 | Tensori specifiche | `test_040_dot_correct.tf` | Prodotto interno (dot product) tra due vettori 1D di uguale dimensione. | OK: [1,2,3] . [4,5,6] = 1*4+2*5+3*6 = 32.0 (tensore 1D di un elemento) |
 | 41 | Tensori specifiche | `test_041_dot_dimension_mismatch.tf` | Dot product tra vettori di lunghezza diversa. | ERROR: dimensioni incompatibili |
@@ -158,9 +179,9 @@ Tutti i test di questa batch combinano piu' operatori in una singola catena. Sud
 | 137 | Combo/Insuccesso | `test_137_read_pgm_fail_after_valid_tensor_ops.tf` | Alcune operazioni tensoriali valide, seguite da un tentativo di leggere un'immagine PGM inesistente. | ERROR: la somma iniziale riesce; la lettura del file PGM inesistente fallisce |
 | 138 | Combo/Insuccesso | `test_138_write_bin_missing_filename_after_ops.tf` | Alcune operazioni valide seguite da un tentativo di scrittura binaria a cui manca l'operando filename. | ERROR: reshape e fill riescono; } fallisce per stack insufficiente (manca la stringa col nome del file) |
 | 139 | Combo/Insuccesso | `test_139_swap_ok_then_drop_too_many.tf` | Uno swap valido seguito da due drop consecutivi quando sullo stack restano solo due elementi. | ERROR: swap riesce; il primo D svuota parzialmente lo stack, il secondo D trova lo stack vuoto |
-| 140 | Combo/Insuccesso | `test_140_over_ok_then_stack_underflow.tf` | Un over valido seguito da tre print consecutivi quando lo stack ne contiene solo due elementi. | ERROR: over crea correttamente una terza copia in cima; le prime due p riescono, la terza trova lo stack vuoto |
+| 140 | Combo/Insuccesso | `test_140_over_ok_then_stack_underflow.tf` | Un over valido seguito da tre print consecutivi quando lo stack ne contiene solo due elementi. | CORRETTO (etichetta originale errata): over ha effetto (b a -- b a b), quindi da 2 elementi se ne ottengono 3; tutte e tre le p devono avere successo, stampando nell'ordine [1,2] (la nuova copia), [3,4], [1,2] (l'originale in fondo). Non c'e' alcun underflow. |
 | 141 | Combo/Insuccesso | `test_141_nested_add_sub_type_error.tf` | Una somma valida seguita da una sottrazione in cui uno degli operandi e' una stringa iniettata a meta' catena. | ERROR: + iniziale riesce; - successiva fallisce perche' uno degli operandi e' una stringa e non un tensore |
-| 142 | Combo/Insuccesso | `test_142_matmul_dim_incompatible_after_reshape.tf` | Due reshape validi seguiti da un prodotto di matrici con dimensioni interne incompatibili. | ERROR: entrambi i reshape (2x3 e 2x2) riescono singolarmente; @ fallisce perche' le dimensioni interne (3 e 2) non combaciano |
+| 142 | Combo/Insuccesso | `test_142_matmul_dim_incompatible_after_reshape.tf` | Due reshape validi seguiti da un prodotto di matrici con dimensioni interne incompatibili. | CORRETTO (etichetta originale errata): stesso caso di test_038, script identico. Sotto la convenzione (b a -- a@b) l'operazione e' VALIDA, risultato 2x3 = [[9,12,15],[19,26,33]]. Non e' un caso di errore. |
 | 143 | Combo/Insuccesso | `test_143_rand_then_bad_shape_reuse.tf` | Generazione casuale valida, seguita da un tentativo di riuso della shape risultante (di rango 1, contenente due valori) come se fosse essa stessa un tensore-forma a 3 dimensioni. | ERROR: ? riesce con shape [4,4]; # estrae correttamente [4,4]; il reshape successivo con [4 4 1] eccede MAX_DIM |
 | 144 | Combo/Insuccesso | `test_144_fill_missing_value_after_shape_ops.tf` | Reshape e ravel validi, seguiti da un fill a cui manca l'operando valori. | ERROR: reshape e ravel riescono; f fallisce per stack insufficiente (manca il tensore v) |
 | 145 | Combo/Insuccesso | `test_145_select_missing_operand_after_compare.tf` | Un confronto valido seguito da una selezione a cui manca uno degli operandi. | ERROR: < riesce e produce una maschera; $ fallisce per stack insufficiente (mancano b e a, resta solo la maschera) |
@@ -315,3 +336,79 @@ Nessuno script di questa batch usa l'operatore `p`. La correttezza va verificata
 | 273 | Errori I/O | `test_273_error_read_pgm_nonexistent_no_print.tf` | Tentativo di lettura di un file PGM inesistente, seguito da un tentativo (mai raggiunto) di riscriverlo: l'errore deve emergere gia' alla lettura. | ERROR: la lettura fallisce per file mancante; l'interprete deve uscire con codice diverso da 0 senza crash, e senza creare io_error_out.pgm |
 | 274 | Errori I/O | `test_274_error_write_bin_missing_filename.tf` | Scrittura binaria a cui manca l'operando filename sullo stack (solo il tensore, nessuna stringa). | ERROR: stack con elementi insufficienti per } |
 | 275 | Errori I/O | `test_275_error_bin_read_nonexistent_then_write.tf` | Tentativo di lettura mmap di un file binario inesistente, seguito da un tentativo (mai raggiunto) di riscriverlo altrove. | ERROR: la lettura fallisce per file mancante; l'interprete deve uscire con codice diverso da 0 senza crash, e senza creare io_error_bin_out.bin |
+
+
+## Batch 5 — 2 test di verifica "is boolean" su matrice grande (276-277)
+
+Nessuno dei due usa un operatore dedicato "is boolean" (non esiste nel
+linguaggio): il controllo e' costruito a mano confrontando ogni elemento
+con 0 e con 1, unendo le due maschere con OR, sommando quante posizioni
+sono valide, e confrontando quella somma con il numero totale di elementi
+(500*500 = 250000, noto perche' la shape e' scelta da noi). Se tutti gli
+elementi sono 0 o 1, la somma coincide con il totale e il risultato
+stampato e' 1.0 (vero); altrimenti 0.0 (falso).
+
+| # | File | Descrizione | Atteso |
+|---|------|-------------|--------|
+| 276 | `test_276_large_matrix_is_boolean_true.tf` | Costruisce una matrice 500x500 GARANTITA booleana tramite soglia (`? > [0.5] f`, che produce solo 0.0/1.0), poi verifica che sia effettivamente booleana. | OK: stampa **1.0** (vero) — ogni elemento e' 0 o 1 per costruzione |
+| 277 | `test_277_large_matrix_is_boolean_false.tf` | Genera una matrice 500x500 di numeri casuali CONTINUI in [0,1) senza soglia, poi applica lo stesso controllo booleano. | OK: stampa **0.0** (falso) — i valori casuali continui non sono quasi mai esattamente 0.0 o 1.0 |
+
+
+## Batch 6 — 5 test di PERFORMANCE (278-282)
+
+Test pensati per stressare il tempo di esecuzione e l'uso di memoria,
+non la correttezza logica. Tutti usano `?` (generazione casuale) invece
+di elencare letteralmente milioni di numeri nel sorgente, cosi' il file
+`.tf` resta piccolissimo pur generando tensori enormi. Tutti terminano
+con `S p` (somma + stampa di UNO SCALARE) invece di stampare il tensore
+completo, cosi' l'output a schermo resta piccolo anche se il calcolo
+sottostante e' massiccio — quello che si misura e' il TEMPO, non
+l'output.
+
+Sono gli scenari giusti per verificare se la parallelizzazione OpenMP
+richiesta dal progetto porta un reale speedup, e per scovare eventuali
+colli di bottiglia algoritmici nascosti (es. una convoluzione o un
+prodotto di matrici implementati con complessita' peggiore del previsto
+si notano immediatamente qui, molto prima che diventino un problema con
+input piu' realistici).
+
+| # | File | Descrizione | Cosa stressa |
+|---|------|-------------|---------------|
+| 278 | `test_278_perf_matmul_1000x1000.tf` | Prodotto tra due matrici 1000x1000 casuali (`@`), poi somma di tutti gli elementi del risultato. | Circa 1 miliardo di moltiplicazioni-somme in @; buon target per il confronto seriale vs OpenMP sul prodotto di matrici. |
+| 279 | `test_279_perf_convolution_huge_image.tf` | Convoluzione di un'immagine casuale 2000x2000 con un kernel uniforme 21x21 (`c`), poi somma. | Circa 1.76 miliardi di operazioni nella convoluzione; la finestra scorrevole per ogni singolo pixel di output e' altamente parallelizzabile, come notato nel testo del progetto stesso. |
+| 280 | `test_280_perf_elementwise_chain_20M.tf` | Catena di 5 vettori casuali da 20 milioni di elementi ciascuno, combinati con `+ + * m R`. | Throughput delle operazioni elemento-per-elemento su vettori molto lunghi (100 milioni di float totali, ~400MB); stressa sia CPU che banda di memoria. |
+| 281 | `test_281_perf_massive_random_reduction_100M.tf` | Genera un singolo vettore casuale da 100 milioni di elementi e ne calcola la somma (`S`). | Throughput del generatore di numeri casuali su larghissima scala e performance della riduzione a somma; singolo tensore da ~400MB. |
+| 282 | `test_282_perf_combined_matmul_conv_pipeline.tf` | Pipeline combinata: prodotto di matrici 700x700, seguito da convoluzione del risultato con kernel 15x15, ReLU, poi somma. | Scenario realistico "worst case" che incatena piu' operazioni pesanti in sequenza (matmul -> conv -> elementwise -> riduzione), utile per misurare il tempo end-to-end di una pipeline invece di un singolo operatore isolato. |
+
+**Attenzione:** questi test possono impiegare da qualche secondo a diversi
+minuti a seconda di quanto e' ottimizzata (e parallelizzata) la vostra
+implementazione, e possono richiedere centinaia di MB di RAM. Se il vostro
+interprete non e' ancora parallelizzato con OpenMP, aspettatevi tempi
+significativamente piu' lunghi: e' proprio quello che questi test vogliono
+far emergere. Se un test non termina in un tempo ragionevole (es. oltre
+qualche minuto), e' un segnale concreto di un problema di complessita'
+algoritmica da investigare, non necessariamente un bug di correttezza.
+
+
+## Batch 7 — 5 test di performance ANCORA PIÙ estremi (283-287)
+
+Stessa filosofia della batch 6 (usano `?` per generare tensori enormi da
+un sorgente minuscolo, terminano con `S p` per un output a schermo
+compatto), ma spinti molto oltre: pensati per far emergere la differenza
+tra un'implementazione seriale e una davvero parallelizzata con OpenMP, e
+per stressare seriamente allocazione/banda di memoria, non solo CPU.
+
+**Attenzione seria su tempo e memoria:** alcuni di questi test possono
+richiedere **1-2GB di RAM** e diversi minuti (nel caso peggiore anche
+oltre) su un'implementazione non ottimizzata. Non sono pensati per essere
+eseguiti di routine ad ogni run della suite: usateli quando volete
+davvero mettere alla prova i limiti prestazionali della vostra
+implementazione, magari con un timeout esplicito.
+
+| # | File | Descrizione | Cosa stressa |
+|---|------|-------------|---------------|
+| 283 | `test_283_perf_matmul_2000x2000.tf` | Prodotto tra due matrici 2000x2000 casuali. | Circa 8 miliardi di moltiplicazioni-somme in `@` (il doppio delle dimensioni lineari del test 278 = 8 volte il costo, essendo O(n^3)). |
+| 284 | `test_284_perf_convolution_4000x4000_k31.tf` | Convoluzione di un'immagine casuale 4000x4000 con un kernel uniforme 31x31 (961 elementi). | Circa 15.4 miliardi di operazioni; anche l'allocazione e il padding di un'immagine 4000x4000 (16 milioni di pixel) da soli non sono banali. |
+| 285 | `test_285_perf_elementwise_chain_50M_x6.tf` | Sei vettori casuali indipendenti da 50 milioni di elementi ciascuno, incatenati con `+ + * m M R`. | 300 milioni di float totali (~1.2GB); stressa pesantemente la banda di memoria oltre che la CPU, con 6 operazioni elemento-per-elemento in sequenza su dati di quella scala. |
+| 286 | `test_286_perf_massive_random_reduction_500M.tf` | Genera un singolo vettore casuale da 500 MILIONI di elementi e lo somma. | Test di allocazione estrema: un solo tensore da circa 2GB. Verifica sia che l'allocatore regga una richiesta cosi' grande, sia il throughput del generatore casuale e della riduzione su quella scala. |
+| 287 | `test_287_perf_ultra_deep_pipeline.tf` | Tre prodotti di matrici 400x400 incatenati in sequenza (A@B poi @C poi @D), seguiti da una convoluzione 25x25 del risultato, ReLU, e somma. | A differenza degli altri test di questa batch (scala pura), qui si misura la PROFONDITA' della pipeline: piu' operazioni pesanti diverse incatenate senza mai materializzare un output intermedio a schermo, il che mette alla prova anche la gestione della memoria intermedia (quanti buffer temporanei vengono allocati e liberati lungo la catena). |
