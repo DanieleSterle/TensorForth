@@ -1,19 +1,37 @@
 // DANIELE STERLE SM3201594
 
+// Questo modulo gestisce l'esecuzione di tutte le operazioni del linguaggio 
+// TensorForth. Ciascuna funzione preleva gli operandi necessari dallo 
+// stack, invoca la corrispondente operazione sui tensori e 
+// inserisce il risultato ottenuto nello stack (se richiesto dall'operazione), 
+// gestendo accuratamente la deallocazione delle risorse in caso di errore.
+
+// Le funzioni presenti in questo modulo seguono tutte la stessa struttura, 
+// quindi viene commentata nel dettaglio solamente la prima funzione; 
+// le successive differiscono esclusivamente per l'operazione eseguita 
+// e dal numero di operandi utilizzati.
+
 #include "ops_handler.h"
 
 int handle_add_op(tensor** stack, int* s_size, int* s_head) {
     tensor t1, t2, result;
 
+    // Preleva il primo operando dalla cima dello stack
+    // In caso di stack vuoto, restituisce un errore di underflow
     *s_head = pop(*stack, &t1, *s_head);
     if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
 
+    // Preleva il secondo operando dalla cima dello stack
+    // Se non è disponibile, dealloca il primo operando già estratto
     *s_head = pop(*stack, &t2, *s_head);
     if (*s_head == ERR_STACK_UNDERFLOW) {
         free_tensor(&t1);
         return ERR_STACK_UNDERFLOW;
     }
 
+    // Esegue la somma tra i due tensori utilizzando la funzione
+    // tensor_add. In caso di errore, libera gli operandi già estratti
+    // prima di restituire il codice di errore
     int add_result = tensor_add(&t1, &t2, &result);
     if (add_result != ERR_SUCCESS) {
         free_tensor(&t1);
@@ -21,16 +39,23 @@ int handle_add_op(tensor** stack, int* s_size, int* s_head) {
         return add_result;
     }
 
+    // Gli operandi non sono più necessari dopo aver calcolato il risultato, 
+    // quindi vengono deallocati per liberare la memoria occupata
     free_tensor(&t1);
     free_tensor(&t2);
 
+    // Inserisce il tensore risultato nella cima dello stack.
     int push_result = push(stack, result, s_size, *s_head);
     
+    // Se l'inserimento nello stack fallisce, dealloca il risultato 
+    // per evitare una perdita di memoria
     if (push_result < 0) { 
         free_tensor(&result); 
         return push_result;  
     }
 
+    // Aggiorna la posizione della cima dello stack con il nuovo indice 
+    // restituito dalla funzione push
     *s_head = push_result; 
     return ERR_SUCCESS;
 }

@@ -3,6 +3,10 @@
 #ifndef TENSORFORTH_OPS_TENSOR_H
 #define TENSORFORTH_OPS_TENSOR_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <omp.h>
 #include "utils.h"
 #include "tensor.h"
 

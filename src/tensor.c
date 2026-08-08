@@ -1,10 +1,8 @@
 // Daniele Sterle SM3201594
 
-// Tensor data structures and lifecycle.
-// Handles memory allocation, reference counting, and shape operations like r, \, and #.
-
 #include "tensor.h"
 
+// Confronta le dimensioni di due tensori verificandone la compatibilità esatta
 int shape_cmp(tensor* t1, tensor* t2) {
 
     if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
@@ -27,6 +25,7 @@ int shape_cmp(tensor* t1, tensor* t2) {
 
 }
 
+// Verifica la compatibilità dimensionale per la moltiplicazione di matrici (colonne della prima == righe della seconda)
 int shape_cmp_matmul(tensor* t1, tensor* t2) {
 
     if ((t1  ==  NULL)  ||  (t2  ==  NULL)) {
@@ -41,6 +40,7 @@ int shape_cmp_matmul(tensor* t1, tensor* t2) {
 
 }
 
+// Controlla che tutti i valori interni del tensore siano rigorosamente booleani (0.0 o 1.0)
 int is_boolean(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR; 
@@ -56,13 +56,11 @@ int is_boolean(tensor* t) {
 
     #pragma omp parallel for reduction(&&:is_valid)
     for (int i = 0; i < s_values; i++) {
-        // If an invalid value is found, set flag to 0
         if ((t->values[i]  !=  0.0)  &&  (t->values[i]  !=  1.0)) {
             is_valid = 0;
         }
     }
 
-    // Check the combined flag after the parallel region
     if (!is_valid) {
         return ERR_NOT_BOOLEAN;
     }
@@ -71,6 +69,7 @@ int is_boolean(tensor* t) {
 
 }
 
+// Valida se il tensore corrisponde a una matrice 2D
 int is_matrix(tensor* t) {
     
     if (t  ==  NULL) return ERR_NULL_PTR;
@@ -83,6 +82,7 @@ int is_matrix(tensor* t) {
 
 }
 
+// Valida se il tensore corrisponde a un vettore 1D
 int is_vector(tensor* t) {
 
     if (t  ==  NULL) return ERR_NULL_PTR;
@@ -95,6 +95,7 @@ int is_vector(tensor* t) {
 
 }
 
+// Inizializza un tensore di tipo numerico allocandone eventualmente i valori e il contatore dei riferimenti
 int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) {
 
     if (t  ==  NULL) {
@@ -108,7 +109,7 @@ int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) 
     t->type = TYPE_NUMERIC;
     int s_values = 0;
     
-    // Check shapes based on the tensor type to avoid out-of-bounds reading
+    // Controlla le forme in base al tipo di tensore per evitare letture fuori dai limiti
     if (tensor_shape == TENSOR_SHAPE_VECTOR) {
         if (shape[0] <= 0) return ERR_SHAPE_MISMATCH;
         
@@ -126,12 +127,12 @@ int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) 
         s_values = shape[0] * shape[1];
         
     } else {
-        // Catch invalid tensor_shape arguments
         return ERR_SHAPE_MISMATCH; 
     }
 
     int newly_allocated = 0;
 
+    // Alloca dinamicamente la memoria per i valori se non sono stati forniti in input
     if (values  ==  NULL) {
         float* temp = (float*) malloc(sizeof(float) * s_values);
 
@@ -144,6 +145,7 @@ int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) 
         t->values = values;
     }
 
+    // Inizializza il ref_count a 1
     t->ref_count = (int*) malloc(sizeof(int));
     
     if (t->ref_count  ==  NULL) {
@@ -158,6 +160,7 @@ int tensor_init_numeric(tensor* t, float* values, int* shape, int tensor_shape) 
     return ERR_SUCCESS;
 }
 
+// Inizializza un tensore di tipo stringa memorizzando il nome del file associato
 int tensor_init_string(tensor* t, char* string) {
     if ((t  ==  NULL)  ||  (string  ==  NULL)) {
         return ERR_NULL_PTR; 
@@ -165,6 +168,7 @@ int tensor_init_string(tensor* t, char* string) {
     
     t->type = TYPE_STRING;
 
+    // Alloca la memoria per la stringa aggiungendo lo spazio per il terminatore null ('\0')
     int str_len = strlen(string);
     t->filename = (char*) malloc(str_len + 1);
     
@@ -172,8 +176,10 @@ int tensor_init_string(tensor* t, char* string) {
         return ERR_OUT_OF_MEMORY;
     }
     
+    // Copia il contenuto della stringa nel buffer allocato
     strcpy(t->filename, string);
 
+    // Alloca e inizializza il contatore dei riferimenti a 1
     t->ref_count = (int*) malloc(sizeof(int));
     if (t->ref_count  ==  NULL) {
         return ERR_OUT_OF_MEMORY;
@@ -189,18 +195,24 @@ void free_tensor(tensor* t) {
         return;
     }
 
+    // Decrementa il contatore dei riferimenti condivisi
     (*t->ref_count)--;
 
+    // Libera effettivamente le risorse solo quando nessun altro fa riferimento al tensore
     if ((*t->ref_count) == 0) {
         
+        // Dealloca il buffer dei valori se il tensore è di tipo numerico standard
         if (t->type == TYPE_NUMERIC) {
             if (t->values != NULL) {
                 free(t->values);
             }
         } 
         
+        // Rilascia la proiezione in memoria (mmap) se il tensore proviene da file su disco
         if (t->type == TYPE_NUMERIC_MMAP) {
             if (t->values != NULL) {
+                
+                // Calcola il numero totale di elementi
                 int total_elements;
                 if (t->ndim == 1) {
                     total_elements = t->shape[0];
@@ -208,27 +220,30 @@ void free_tensor(tensor* t) {
                     total_elements = t->shape[0] * t->shape[1];
                 }
 
-                // 1. Calculate the exact total size of the file in memory
+                // Calcola la dimensione totale esatta del file in memoria
                 size_t total_size = sizeof(on_disk_tensor) + 
                                    (total_elements * sizeof(float));
 
-                // 2. Step backwards from t->values to find the original mmap pointer
+                // Torna indietro rispetto a t->values per risalire al puntatore mmap originale
                 void* original_mmap_ptr = (void*)((char*)t->values - sizeof(on_disk_tensor));
 
                 munmap(original_mmap_ptr, total_size);
             }
         } 
         
+        // Libera la stringa allocata se il tensore contiene un percorso o un nome file
         if (t->type == TYPE_STRING) {
             if (t->filename != NULL) {
                 free(t->filename);
             }
         }
 
+        // Infine dealloca la memoria del contatore dei riferimenti
         free(t->ref_count);
     }
 }
 
+// Stampa a schermo la forma e i dati numerici del tensore
 void tensor_print(tensor* t) {
     
     if (t == NULL) {
@@ -237,7 +252,6 @@ void tensor_print(tensor* t) {
 
     if ((t->type  !=  TYPE_NUMERIC)  &&  (t->type  !=  TYPE_NUMERIC_MMAP)) return;
 
-    // shape
     printf("Tensor(shape=[");
     if (t->ndim == 1) {
         printf("%d", t->shape[0]);

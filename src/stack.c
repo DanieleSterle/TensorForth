@@ -1,11 +1,9 @@
 // Daniele Sterle SM3201594
 
-// Stack memory and manipulation.
-// Implements stack push/pop logic and stack operators like d, s, o, and D.
-
 #include "stack.h"
 
-int create_stack(tensor** stack) {
+// Inizializza lo stack allocando la memoria iniziale in base alla capacità iniziale
+int init_stack(tensor** stack) {
     int curr_stack_size = INITIAL_STACK_CAPACITY;
 
     if (curr_stack_size == 0) {
@@ -21,9 +19,10 @@ int create_stack(tensor** stack) {
     return curr_stack_size;
 }
 
+// Inserisce un elemento nello stack, raddoppiandone la capacità se necessario
 int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
 
-    // Se array occupato al 100% raddoppiare size
+    // Raddoppia la capacità dello stack quando l'array risulta completamente pieno
     if (idx_head == *curr_stack_size) {
         int new_size = *curr_stack_size * 2;
 
@@ -42,6 +41,7 @@ int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head) {
     return idx_head;
 }
 
+// Rimuove e restituisce l'elemento in cima allo stack
 int pop(tensor* stack, tensor* t, int idx_head) {
 
     if (idx_head <= 0) {
@@ -55,10 +55,12 @@ int pop(tensor* stack, tensor* t, int idx_head) {
     return idx_head;
 }
 
+// Dealloca interamente lo stack e tutti i tensori contenuti al suo interno
 void free_stack(tensor* stack, int idx_head){
 
     if (stack == NULL) return;
 
+    // Libera le risorse associate a ciascun tensore presente nello stack
     for (int i = 0; i < idx_head; i++){
         free_tensor(&stack[i]);
     }
@@ -66,6 +68,7 @@ void free_stack(tensor* stack, int idx_head){
     free(stack);
 }
 
+// Duplica l'elemento in cima allo stack incrementandone il ref_count
 int stack_dup(tensor** stack, int* s_size, int* s_head) {
 
     if (*s_head <= 0) {
@@ -87,18 +90,22 @@ int stack_dup(tensor** stack, int* s_size, int* s_head) {
 
 }
 
+// Scambia la posizione dei primi due elementi in cima allo stack
 int stack_swap(tensor** stack, int* s_size, int* s_head) {
     tensor t1, t2;
 
+    // Estrae il primo elemento dalla cima
     *s_head = pop(*stack, &t1, *s_head);
     if (*s_head == ERR_STACK_UNDERFLOW) return ERR_STACK_UNDERFLOW;
 
+    // Estrae il secondo elemento dalla cima
     *s_head = pop(*stack, &t2, *s_head);
     if (*s_head == ERR_STACK_UNDERFLOW) {
         free_tensor(&t1);
         return ERR_STACK_UNDERFLOW;
     }
 
+    // Reinserisce il primo elemento estratto per invertire l'ordine
     int push_result = push(stack, t1, s_size, *s_head);
     
     if (push_result < 0) { 
@@ -109,6 +116,7 @@ int stack_swap(tensor** stack, int* s_size, int* s_head) {
 
     *s_head = push_result; 
 
+    // Reinserisce il secondo elemento estratto completando lo scambio
     push_result = push(stack, t2, s_size, *s_head);
     
     if (push_result < 0) { 
@@ -120,6 +128,7 @@ int stack_swap(tensor** stack, int* s_size, int* s_head) {
     return ERR_SUCCESS;
 }
 
+// Copia il secondo elemento dall'alto e lo posiziona in cima allo stack
 int stack_over(tensor** stack, int* s_size, int* s_head) {
 
     if (*s_head <= 1) {
@@ -141,6 +150,7 @@ int stack_over(tensor** stack, int* s_size, int* s_head) {
 }
 
 
+// Rimuove e dealloca l'elemento attualmente in cima allo stack
 int stack_drop(tensor** stack, int* s_head) {
 
     if (*s_head <= 0) {

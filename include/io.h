@@ -4,13 +4,14 @@
 #define TENSORFORTH_IO_H
 
 #include "common.h"
+#include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/mman.h>
+#include <math.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
 #include "utils.h"
 #include "tensor.h"
 

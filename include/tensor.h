@@ -4,44 +4,52 @@
 #define TENSORFORTH_TENSOR_H
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
 #include <sys/mman.h>
 #include "utils.h"
 
+// Numero massimo di dimensioni supportate per i tensori
 #define MAX_DIM 2
 
+// Tipi di dati supportati dal tensore
 typedef enum {
     TYPE_NUMERIC,
     TYPE_NUMERIC_MMAP,
     TYPE_STRING
 } tensor_type;
 
+// Tipologie di forma strutturale del tensore
 typedef enum {
     TENSOR_SHAPE_VECTOR,
     TENSOR_SHAPE_MATRIX
 } tensor_shape;
 
+// Struttura principale per la rappresentazione di un tensore
 typedef struct {
-    // The tag to check what data is active
+    // Tag per identificare quale campo della union è attivo
     tensor_type type;
     
     union {                 
-        
+        // Dati per i tensori numerici (standard o in memoria)
         struct {            
             float* values;
-            // e.g., shape[0] for 1D; shape[0] (rows), shape[1] (cols) for 2D
+            // shape[0] per 1D; shape[0] (righe), shape[1] (colonne) per 2D
             int32_t shape[MAX_DIM];
-            // 1 for vector, 2 for matrix
+            // 1 per vettore, 2 per matrice
             int32_t ndim;
         };                  
         
+        // Nome del file utilizzato per le operazioni di I/O
         char* filename;
     };
     
+    // Contatore di riferimenti condiviso per la gestione della memoria
     int* ref_count;
 } tensor;
 
+// Struttura di supporto per la memorizzazione dei metadati su disco
 typedef struct {
     int32_t shape[MAX_DIM];
     int32_t ndim;

@@ -1,16 +1,14 @@
 // Daniele Sterle SM3201594
 
-// Helpers, printing, and randomness.
-// Implements the print function p, random tensor generation ?, and error handling.
-
 #include "utils.h"
 
+// Gestisce la stampa su stderr dei messaggi di errore in base al codice fornito
 void print_error(int error_code) {
     switch (error_code) {
         case ERR_SUCCESS:
             break;
             
-        // --- Memory & Stack ---
+        // Gestione Memoria e Stack
         case ERR_NULL_PTR:
             fprintf(stderr, "ERRORE: Rilevato puntatore nullo.\n");
             break;
@@ -24,7 +22,7 @@ void print_error(int error_code) {
             fprintf(stderr, "ERRORE: Capacità dello stack superata.\n");
             break;
             
-        // --- Math & Logic Operations ---
+        // Operazioni Matematiche e Logiche
         case ERR_SHAPE_MISMATCH:
             fprintf(stderr, "ERRORE DI DIMENSIONE: Le dimensioni dei tensori non corrispondono per questa operazione.\n");
             break;
@@ -50,7 +48,7 @@ void print_error(int error_code) {
             fprintf(stderr, "ERRORE DI TIPO: L'operazione richiede una stringa (nome file), ma è stato trovato un tensore numerico.\n");
             break;
 
-        // --- I/O and Files ---
+        // Gestione I/O e File
         case ERR_MISSING_ARGUMENT:
             fprintf(stderr, "ERRORE: Non è stato passato nessun file in input.\n");
             break;
@@ -79,7 +77,7 @@ void print_error(int error_code) {
             fprintf(stderr, "ERRORE I/O: Si è verificato un errore generico di input/output.\n");
             break;
 
-        // --- Syntax and Parsing ---
+        // Sintassi e Parsing
         case ERR_SYNTAX:
             fprintf(stderr, "ERRORE DI SINTASSI: Formato non valido, spazio mancante o numero fuori posto.\n");
             break;

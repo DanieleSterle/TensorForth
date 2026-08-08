@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include "tensor.h"
 
+// Capacità iniziale predefinita per lo stack dei tensori
 #define INITIAL_STACK_CAPACITY 4
 
-int create_stack(tensor** stack);
+int init_stack(tensor** stack);
 int push(tensor** stack, tensor t, int* curr_stack_size, int idx_head);
 int pop(tensor* stack, tensor* t, int idx_head);
 void free_stack(tensor* stack, int idx_head);
