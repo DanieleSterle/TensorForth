@@ -91,8 +91,6 @@ All memory is strictly and correctly deallocated. Zero memory leaks have been ve
 
 ## Documentation
 
-## Documentation
-
 To better understand all the project’s specifications and details, check the official documentation:
 [📄 Project Documentation (PDF)](./project_C.pdf)
 
